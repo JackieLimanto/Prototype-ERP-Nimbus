@@ -9,6 +9,7 @@ import Inventory from './pages/Inventory';
 import Settings from './pages/Settings';
 import GoodsReceipt from './pages/GoodsReceipt';
 import Picking from './pages/Picking';
+import POSRegister from './pages/POSRegister';
 
 const ProtectedRoute = ({ useLayout = true }: { useLayout?: boolean }) => {
   const { isAuthenticated } = useAuth();
@@ -42,10 +43,11 @@ function App() {
             <Route path="/settings" element={<Settings />} />
           </Route>
 
-          {/* Mobile / Worker Routes (Full Screen) */}
+          {/* Mobile / Worker / POS Routes (Full Screen) */}
           <Route element={<ProtectedRoute useLayout={false} />}>
             <Route path="/inbound/receive" element={<GoodsReceipt />} />
             <Route path="/outbound/pick" element={<Picking />} />
+            <Route path="/pos" element={<POSRegister />} />
           </Route>
         </Routes>
       </Router>

@@ -1,5 +1,6 @@
+import { useNavigate } from 'react-router-dom';
 import { mockInventory, mockPOs, mockSOs } from '../mockData';
-import { DollarSign, Package, ShoppingCart, TrendingUp, AlertTriangle } from 'lucide-react';
+import { DollarSign, Package, ShoppingCart, TrendingUp, AlertTriangle, Store } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const StatCard = ({ title, value, icon: Icon, color, trend }: any) => (
@@ -21,6 +22,7 @@ const StatCard = ({ title, value, icon: Icon, color, trend }: any) => (
 );
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   // Calculate stats
   const totalStockValue = mockInventory.reduce((acc, item) => {
     // Find price from mockProducts
@@ -47,6 +49,13 @@ const Dashboard = () => {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-slate-900">Dashboard Overview</h1>
         <div className="flex space-x-2">
+           <button 
+             onClick={() => navigate('/pos')}
+             className="flex items-center px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors shadow-lg shadow-slate-800/20"
+           >
+             <Store className="w-4 h-4 mr-2" />
+             Launch POS
+           </button>
            <select className="bg-white border border-slate-300 text-slate-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
              <option>Last 7 Days</option>
              <option>Last 30 Days</option>
