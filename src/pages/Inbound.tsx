@@ -1,10 +1,16 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { mockPOs } from '../mockData';
-import { Plus, Filter, MoreHorizontal } from 'lucide-react';
+import { Plus, Filter, MoreHorizontal, PackageCheck } from 'lucide-react';
 import clsx from 'clsx';
 
 const Inbound = () => {
   const [activeTab, setActiveTab] = useState<'PO' | 'GR'>('PO');
+  const navigate = useNavigate();
+
+  const handleReceive = (po: any) => {
+    navigate('/inbound/receive', { state: { po } });
+  };
 
   return (
     <div className="space-y-6">
@@ -78,9 +84,18 @@ const Inbound = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button className="text-slate-400 hover:text-slate-600">
-                      <MoreHorizontal className="w-5 h-5" />
-                    </button>
+                    {po.status !== 'RECEIVED' && po.status !== 'CLOSED' ? (
+                      <button 
+                        onClick={() => handleReceive(po)}
+                        className="text-blue-600 hover:text-blue-900 flex items-center ml-auto"
+                      >
+                        <PackageCheck className="w-4 h-4 mr-1" /> Receive
+                      </button>
+                    ) : (
+                      <button className="text-slate-400 hover:text-slate-600">
+                        <MoreHorizontal className="w-5 h-5" />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

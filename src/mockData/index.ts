@@ -9,11 +9,26 @@ export const mockUser: User = {
 };
 
 export const mockProducts: Product[] = [
-  { id: 'p1', code: 'LAP-001', name: 'Asus Vivobook Pro', category: 'Electronics', price: 12000000, stock: 50, unit: 'Unit' },
-  { id: 'p2', code: 'MON-002', name: 'Samsung Monitor 24"', category: 'Electronics', price: 2500000, stock: 120, unit: 'Unit' },
-  { id: 'p3', code: 'KEY-003', name: 'Logitech Mechanical Keyboard', category: 'Accessories', price: 1500000, stock: 200, unit: 'Unit' },
-  { id: 'p4', code: 'MOU-004', name: 'Razer Deathadder', category: 'Accessories', price: 800000, stock: 150, unit: 'Unit' },
-  { id: 'p5', code: 'CHAIR-005', name: 'ErgoChair Pro', category: 'Furniture', price: 4500000, stock: 20, unit: 'Unit' },
+  { 
+    id: 'p1', code: 'LAP-001', name: 'Asus Vivobook Pro', category: 'Electronics', price: 12000000, stock: 50, unit: 'Unit',
+    thumbnailUrl: 'https://placehold.co/100x100?text=Laptop'
+  },
+  { 
+    id: 'p2', code: 'MON-002', name: 'Samsung Monitor 24"', category: 'Electronics', price: 2500000, stock: 120, unit: 'Unit',
+    thumbnailUrl: 'https://placehold.co/100x100?text=Monitor'
+  },
+  { 
+    id: 'p3', code: 'KEY-003', name: 'Logitech Mechanical Keyboard', category: 'Accessories', price: 1500000, stock: 200, unit: 'Unit',
+    thumbnailUrl: 'https://placehold.co/100x100?text=Keyboard'
+  },
+  { 
+    id: 'p4', code: 'MOU-004', name: 'Razer Deathadder', category: 'Accessories', price: 800000, stock: 150, unit: 'Unit',
+    thumbnailUrl: 'https://placehold.co/100x100?text=Mouse'
+  },
+  { 
+    id: 'p5', code: 'CHAIR-005', name: 'ErgoChair Pro', category: 'Furniture', price: 4500000, stock: 20, unit: 'Unit',
+    thumbnailUrl: 'https://placehold.co/100x100?text=Chair'
+  },
 ];
 
 export const mockSuppliers: Supplier[] = [
@@ -27,8 +42,19 @@ export const mockCustomers: Customer[] = [
 ];
 
 export const mockWarehouses: Warehouse[] = [
-  { id: 'w1', name: 'Jakarta Central', location: 'Jakarta' },
-  { id: 'w2', name: 'Bandung Hub', location: 'Bandung' },
+  { 
+    id: 'w1', name: 'Jakarta Central', location: 'Jakarta',
+    zones: [
+      { id: 'z1', name: 'Zone A (Electronics)', locations: ['A-01-01', 'A-01-02', 'A-02-01'] },
+      { id: 'z2', name: 'Zone B (Bulk)', locations: ['B-01-01'] }
+    ]
+  },
+  { 
+    id: 'w2', name: 'Bandung Hub', location: 'Bandung',
+    zones: [
+      { id: 'z3', name: 'Zone A', locations: ['A-01-01'] }
+    ]
+  },
 ];
 
 export const mockInventory: InventoryRecord[] = [
@@ -47,7 +73,7 @@ export const mockPOs: PurchaseOrder[] = [
     status: 'RECEIVED',
     total: 600000000,
     items: [
-      { productId: 'p1', productName: 'Asus Vivobook Pro', quantity: 50, unitPrice: 12000000 }
+      { productId: 'p1', productName: 'Asus Vivobook Pro', quantity: 50, quantityReceived: 50, unitPrice: 12000000 }
     ]
   },
   {
@@ -58,7 +84,7 @@ export const mockPOs: PurchaseOrder[] = [
     status: 'SUBMITTED',
     total: 90000000,
     items: [
-      { productId: 'p5', productName: 'ErgoChair Pro', quantity: 20, unitPrice: 4500000 }
+      { productId: 'p5', productName: 'ErgoChair Pro', quantity: 20, quantityReceived: 0, unitPrice: 4500000 }
     ]
   },
 ];
@@ -72,7 +98,7 @@ export const mockSOs: SalesOrder[] = [
     status: 'COMPLETED',
     total: 24000000,
     items: [
-      { productId: 'p1', productName: 'Asus Vivobook Pro', quantity: 2, unitPrice: 12000000 }
+      { productId: 'p1', productName: 'Asus Vivobook Pro', quantity: 2, quantityPicked: 2, unitPrice: 12000000, location: 'A-01-01' }
     ]
   },
   {
@@ -83,7 +109,18 @@ export const mockSOs: SalesOrder[] = [
     status: 'PROCESSING',
     total: 25000000,
     items: [
-      { productId: 'p2', productName: 'Samsung Monitor 24"', quantity: 10, unitPrice: 2500000 }
+      { productId: 'p2', productName: 'Samsung Monitor 24"', quantity: 10, quantityPicked: 0, unitPrice: 2500000, location: 'A-01-02' }
+    ]
+  },
+  {
+    id: 'SO-2025-003',
+    customerId: 'c1',
+    customerName: 'Toko Maju Mundur',
+    date: '2025-12-19',
+    status: 'CONFIRMED',
+    total: 12000000,
+    items: [
+      { productId: 'p1', productName: 'Asus Vivobook Pro', quantity: 1, quantityPicked: 0, unitPrice: 12000000, location: 'A-01-01' }
     ]
   }
 ];

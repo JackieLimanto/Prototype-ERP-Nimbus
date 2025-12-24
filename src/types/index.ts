@@ -16,6 +16,7 @@ export interface Product {
   price: number;
   stock: number;
   unit: string;
+  thumbnailUrl?: string; // Added for SCR-030
 }
 
 export interface Supplier {
@@ -32,7 +33,7 @@ export interface Customer {
   address: string;
 }
 
-export type POStatus = 'DRAFT' | 'SUBMITTED' | 'RECEIVED';
+export type POStatus = 'DRAFT' | 'SUBMITTED' | 'PARTIALLY_RECEIVED' | 'RECEIVED' | 'CLOSED';
 
 export interface PurchaseOrder {
   id: string;
@@ -48,10 +49,11 @@ export interface POItem {
   productId: string;
   productName: string;
   quantity: number;
+  quantityReceived: number; // Added for tracking receipt
   unitPrice: number;
 }
 
-export type SOStatus = 'DRAFT' | 'CONFIRMED' | 'PROCESSING' | 'COMPLETED';
+export type SOStatus = 'DRAFT' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'COMPLETED';
 
 export interface SalesOrder {
   id: string;
@@ -67,13 +69,22 @@ export interface SOItem {
   productId: string;
   productName: string;
   quantity: number;
+  quantityPicked: number; // Added for tracking picking
   unitPrice: number;
+  location?: string; // Added for picking guidance
 }
 
 export interface Warehouse {
   id: string;
   name: string;
   location: string;
+  zones: Zone[];
+}
+
+export interface Zone {
+  id: string;
+  name: string;
+  locations: string[]; // e.g. A-01-01
 }
 
 export interface InventoryRecord {

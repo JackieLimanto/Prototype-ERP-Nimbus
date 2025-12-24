@@ -29,8 +29,8 @@ const Dashboard = () => {
   }, 0);
 
   const lowStockItems = mockInventory.filter(i => i.quantity < 10).length;
-  const pendingPOs = mockPOs.filter(po => po.status !== 'RECEIVED').length;
-  const activeSOs = mockSOs.filter(so => so.status !== 'COMPLETED').length;
+  const pendingPOs = mockPOs.filter(po => po.status !== 'RECEIVED' && po.status !== 'CLOSED').length;
+  const pendingShipments = mockSOs.filter(so => so.status !== 'COMPLETED' && so.status !== 'SHIPPED').length;
 
   const chartData = [
     { name: 'Mon', Inbound: 40, Outbound: 24 },
@@ -56,27 +56,27 @@ const Dashboard = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard 
-          title="Total Inventory Value" 
+          title="Total Stock Value" 
           value={`Rp ${totalStockValue.toLocaleString()}`} 
           icon={DollarSign} 
           color="bg-blue-500" 
           trend="+12%"
         />
         <StatCard 
-          title="Pending Inbound (PO)" 
+          title="Open POs" 
           value={pendingPOs} 
           icon={Package} 
           color="bg-purple-500" 
         />
         <StatCard 
-          title="Active Orders (SO)" 
-          value={activeSOs} 
+          title="Pending Shipments" 
+          value={pendingShipments} 
           icon={ShoppingCart} 
           color="bg-emerald-500"
           trend="+5%"
         />
         <StatCard 
-          title="Low Stock Alerts" 
+          title="Low Stock Items" 
           value={lowStockItems} 
           icon={AlertTriangle} 
           color="bg-amber-500" 
@@ -85,7 +85,7 @@ const Dashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-          <h3 className="text-lg font-semibold text-slate-900 mb-6">Inbound vs Outbound Volume</h3>
+          <h3 className="text-lg font-semibold text-slate-900 mb-6">Inbound vs Outbound Qty (Last 30 Days)</h3>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData}>
@@ -101,7 +101,7 @@ const Dashboard = () => {
         </div>
 
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-          <h3 className="text-lg font-semibold text-slate-900 mb-4">Recent Activity</h3>
+          <h3 className="text-lg font-semibold text-slate-900 mb-4">Recent Activities</h3>
           <div className="space-y-4">
             {[1, 2, 3, 4, 5].map((_, i) => (
               <div key={i} className="flex items-start pb-4 border-b border-slate-100 last:border-0 last:pb-0">

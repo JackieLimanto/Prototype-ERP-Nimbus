@@ -7,18 +7,22 @@ import Inbound from './pages/Inbound';
 import Outbound from './pages/Outbound';
 import Inventory from './pages/Inventory';
 import Settings from './pages/Settings';
+import GoodsReceipt from './pages/GoodsReceipt';
+import Picking from './pages/Picking';
 
-const ProtectedRoute = () => {
+const ProtectedRoute = ({ useLayout = true }: { useLayout?: boolean }) => {
   const { isAuthenticated } = useAuth();
   
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  return (
+  return useLayout ? (
     <Layout>
       <Outlet />
     </Layout>
+  ) : (
+    <Outlet />
   );
 };
 
@@ -29,12 +33,19 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           
-          <Route element={<ProtectedRoute />}>
+          {/* Desktop / Admin Routes with Sidebar */}
+          <Route element={<ProtectedRoute useLayout={true} />}>
             <Route path="/" element={<Dashboard />} />
             <Route path="/inbound" element={<Inbound />} />
             <Route path="/outbound" element={<Outbound />} />
             <Route path="/inventory" element={<Inventory />} />
             <Route path="/settings" element={<Settings />} />
+          </Route>
+
+          {/* Mobile / Worker Routes (Full Screen) */}
+          <Route element={<ProtectedRoute useLayout={false} />}>
+            <Route path="/inbound/receive" element={<GoodsReceipt />} />
+            <Route path="/outbound/pick" element={<Picking />} />
           </Route>
         </Routes>
       </Router>

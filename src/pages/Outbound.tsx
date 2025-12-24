@@ -1,10 +1,16 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { mockSOs } from '../mockData';
-import { Plus, Filter, MoreHorizontal } from 'lucide-react';
+import { Plus, Filter, MoreHorizontal, PackageSearch } from 'lucide-react';
 import clsx from 'clsx';
 
 const Outbound = () => {
   const [activeTab, setActiveTab] = useState<'SO' | 'Picking'>('SO');
+  const navigate = useNavigate();
+
+  const handlePick = (so: any) => {
+    navigate('/outbound/pick', { state: { so } });
+  };
 
   return (
     <div className="space-y-6">
@@ -78,9 +84,18 @@ const Outbound = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button className="text-slate-400 hover:text-slate-600">
-                      <MoreHorizontal className="w-5 h-5" />
-                    </button>
+                    {so.status === 'CONFIRMED' || so.status === 'PROCESSING' ? (
+                      <button 
+                         onClick={() => handlePick(so)}
+                         className="text-blue-600 hover:text-blue-900 flex items-center ml-auto"
+                      >
+                        <PackageSearch className="w-4 h-4 mr-1" /> Pick
+                      </button>
+                    ) : (
+                      <button className="text-slate-400 hover:text-slate-600">
+                        <MoreHorizontal className="w-5 h-5" />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
