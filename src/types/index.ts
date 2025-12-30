@@ -8,6 +8,17 @@ export interface User {
   avatarUrl?: string;
 }
 
+export type CostingMethod = 'FIFO' | 'AVERAGE' | 'LAST_PRICE';
+
+export interface TenantSettings {
+  costingMethod: CostingMethod;
+  isCostingLocked: boolean; // Locked after first transaction
+  enableQC: boolean;
+  enablePutAway: boolean;
+  enablePacking: boolean;
+  enableShipping: boolean;
+}
+
 export interface Product {
   id: string;
   code: string;
@@ -16,7 +27,7 @@ export interface Product {
   price: number;
   stock: number;
   unit: string;
-  thumbnailUrl?: string; // Added for SCR-030
+  thumbnailUrl?: string;
 }
 
 export interface Supplier {
@@ -33,7 +44,7 @@ export interface Customer {
   address: string;
 }
 
-export type POStatus = 'DRAFT' | 'SUBMITTED' | 'PARTIALLY_RECEIVED' | 'RECEIVED' | 'CLOSED';
+export type POStatus = 'DRAFT' | 'SUBMITTED' | 'APPROVED' | 'PARTIALLY_RECEIVED' | 'RECEIVED' | 'CLOSED' | 'CANCELLED';
 
 export interface PurchaseOrder {
   id: string;
@@ -49,11 +60,39 @@ export interface POItem {
   productId: string;
   productName: string;
   quantity: number;
-  quantityReceived: number; // Added for tracking receipt
+  quantityReceived: number;
   unitPrice: number;
 }
 
-export type SOStatus = 'DRAFT' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'COMPLETED';
+export type GRStatus = 'DRAFT' | 'CONFIRMED' | 'QC_PENDING' | 'PUTAWAY_PENDING' | 'COMPLETED';
+
+export interface GoodsReceipt {
+  id: string;
+  poId: string;
+  date: string;
+  status: GRStatus;
+  items: GRItem[];
+}
+
+export interface GRItem {
+  productId: string;
+  quantity: number;
+  locationId?: string; // Temporary receiving location
+  qcStatus?: 'PENDING' | 'PASS' | 'FAIL';
+}
+
+export interface QCRecord {
+  id: string;
+  grId: string;
+  itemId: string;
+  quantityPassed: number;
+  quantityFailed: number;
+  reason?: string;
+  inspectorId: string;
+  timestamp: string;
+}
+
+export type SOStatus = 'DRAFT' | 'CONFIRMED' | 'PROCESSING' | 'PICKED' | 'PACKED' | 'SHIPPED' | 'COMPLETED' | 'CANCELLED';
 
 export interface SalesOrder {
   id: string;
@@ -69,9 +108,50 @@ export interface SOItem {
   productId: string;
   productName: string;
   quantity: number;
-  quantityPicked: number; // Added for tracking picking
+  quantityPicked: number;
   unitPrice: number;
-  location?: string; // Added for picking guidance
+  location?: string;
+}
+
+export interface Package {
+  id: string;
+  soId: string;
+  trackingNumber: string;
+  weight: number;
+  dimensions: string;
+  items: { productId: string; quantity: number }[];
+  status: 'PACKED' | 'SHIPPED';
+}
+
+export interface Shipment {
+  id: string;
+  soId: string;
+  carrier: string;
+  trackingNumber: string;
+  shipDate: string;
+  packages: Package[];
+}
+
+export type ReturnType = 'PURCHASE_RETURN' | 'SALES_RETURN';
+export type ReturnStatus = 'DRAFT' | 'APPROVED' | 'RECEIVED' | 'COMPLETED' | 'REJECTED';
+
+export interface ReturnOrder {
+  id: string;
+  type: ReturnType;
+  referenceId: string; // PO ID or SO ID
+  partnerName: string; // Supplier or Customer
+  date: string;
+  status: ReturnStatus;
+  items: ReturnItem[];
+  reason: string;
+}
+
+export interface ReturnItem {
+  productId: string;
+  productName: string;
+  quantity: number;
+  condition: 'GOOD' | 'DAMAGED' | 'EXPIRED';
+  disposition?: 'RESTOCK' | 'SCRAP' | 'REPAIR' | 'RETURN_TO_VENDOR';
 }
 
 export interface Warehouse {
@@ -84,7 +164,7 @@ export interface Warehouse {
 export interface Zone {
   id: string;
   name: string;
-  locations: string[]; // e.g. A-01-01
+  locations: string[]; 
 }
 
 export interface InventoryRecord {
@@ -93,6 +173,16 @@ export interface InventoryRecord {
   productName: string;
   warehouseId: string;
   warehouseName: string;
-  location: string; // "A-01-01"
+  location: string;
   quantity: number;
+  value: number; // Based on Costing Method
+}
+
+export interface AuditLog {
+  id: string;
+  timestamp: string;
+  user: string;
+  action: string;
+  entity: string;
+  details: string;
 }

@@ -6,7 +6,8 @@ import {
   Boxes, 
   Settings, 
   LogOut,
-  ChevronRight
+  ChevronRight,
+  ArrowLeftRight
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import clsx from 'clsx';
@@ -19,6 +20,7 @@ const Sidebar = () => {
     { to: '/inbound', icon: PackageCheck, label: 'Inbound' },
     { to: '/outbound', icon: Truck, label: 'Outbound' },
     { to: '/inventory', icon: Boxes, label: 'Inventory' },
+    { to: '/returns', icon: ArrowLeftRight, label: 'Returns' },
     { to: '/settings', icon: Settings, label: 'Settings' },
   ];
 

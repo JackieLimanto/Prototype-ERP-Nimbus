@@ -1,20 +1,22 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PurchaseOrder } from '../types';
-import { ArrowLeft, Check, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Check, AlertTriangle, Sparkles, Calendar, Hash } from 'lucide-react';
+import clsx from 'clsx';
 
 const GoodsReceipt = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  // In a real app, we'd fetch the PO by ID from URL params.
-  // Here we expect the PO object to be passed in state
   const po = location.state?.po as PurchaseOrder;
 
   const [receivedItems, setReceivedItems] = useState(
     po?.items.map(item => ({
       ...item,
       qtyInput: 0,
-      qcPassed: true
+      qcPassed: true,
+      batchNo: '',
+      expiryDate: '',
+      suggestedLoc: 'A-01-01' // Mock smart allocate
     })) || []
   );
 
@@ -40,75 +42,130 @@ const GoodsReceipt = () => {
     setReceivedItems(newItems);
   };
 
+  const handleUpdateField = (index: number, field: string, val: string) => {
+    const newItems = [...receivedItems];
+    (newItems[index] as any)[field] = val;
+    setReceivedItems(newItems);
+  };
+
   const handleSubmit = () => {
-    // Logic to save GR
-    alert('Goods Receipt Submitted!');
+    // Check for hard-block over-receipt
+    const hasViolation = receivedItems.some(i => i.qtyInput > i.quantity);
+    if (hasViolation) {
+      alert('Error: Kuantitas diterima melebihi pesanan. Perlu persetujuan Admin (BR-GR-002).');
+      return;
+    }
+    
+    alert('Goods Receipt Submitted Successfully!');
     navigate('/inbound');
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white min-h-screen md:min-h-0 md:rounded-xl md:shadow-sm md:border md:border-slate-200">
+    <div className="max-w-md mx-auto bg-slate-50 min-h-screen md:min-h-0 md:rounded-xl md:shadow-sm md:border md:border-slate-200">
       {/* Mobile Header */}
       <div className="bg-slate-900 text-white p-4 sticky top-0 z-10 flex items-center shadow-md">
         <button onClick={() => navigate(-1)} className="mr-4">
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div>
-          <h1 className="text-lg font-bold">Receive Goods</h1>
+          <h1 className="text-lg font-bold">Receive Goods (GRN)</h1>
           <p className="text-xs text-slate-400">{po.id} • {po.supplierName}</p>
         </div>
       </div>
 
-      <div className="p-4 space-y-6 pb-24">
+      <div className="p-4 space-y-6 pb-32">
         {receivedItems.map((item, idx) => {
           const isOverReceiving = item.qtyInput > item.quantity;
 
           return (
-            <div key={idx} className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
-              <div className="flex justify-between items-start mb-3">
+            <div key={idx} className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-4">
+              <div className="flex justify-between items-start">
                 <div>
-                  <h3 className="font-bold text-slate-900">{item.productName}</h3>
-                  <p className="text-xs text-slate-500">SKU: {item.productId}</p>
+                  <h3 className="font-bold text-slate-900 leading-tight">{item.productName}</h3>
+                  <p className="text-[10px] text-slate-400 font-mono mt-1">SKU: {item.productId}</p>
                 </div>
-                <div className="text-right">
-                  <span className="text-xs font-medium bg-blue-50 text-blue-700 px-2 py-1 rounded-full">
-                    Ordered: {item.quantity}
-                  </span>
-                </div>
+                <span className="text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-1 rounded uppercase">
+                  PO: {item.quantity}
+                </span>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 items-end">
-                <div>
-                  <label className="block text-xs font-medium text-slate-500 mb-1">Qty Received</label>
+              {/* Qty and QC Row */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Qty Received</label>
                   <input
                     type="number"
-                    className={`w-full px-3 py-2 border rounded-lg text-lg font-bold focus:outline-none focus:ring-2 ${
+                    className={`w-full px-3 py-2 border rounded-lg text-lg font-black focus:outline-none focus:ring-2 ${
                       isOverReceiving 
-                        ? "border-red-300 focus:ring-red-500 text-red-600 bg-red-50" 
-                        : "border-slate-300 focus:ring-blue-500 text-slate-900"
+                        ? "border-red-300 bg-red-50 text-red-600 focus:ring-red-500" 
+                        : "border-slate-200 bg-slate-50 text-slate-900 focus:ring-blue-500"
                     }`}
-                    value={item.qtyInput}
+                    value={item.qtyInput || ''}
+                    placeholder="0"
                     onChange={(e) => handleQtyChange(idx, e.target.value)}
                   />
                 </div>
-                
-                <div className="flex items-center justify-end h-full pb-1">
-                   <div className="flex items-center space-x-2">
-                     <span className="text-sm text-slate-600">QC Pass?</span>
-                     <button
-                       onClick={() => toggleQC(idx)}
-                       className={`w-12 h-6 rounded-full p-1 transition-colors ${item.qcPassed ? 'bg-emerald-500' : 'bg-slate-300'}`}
-                     >
-                       <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${item.qcPassed ? 'translate-x-6' : ''}`}></div>
-                     </button>
-                   </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">QC Pass?</label>
+                  <button
+                    onClick={() => toggleQC(idx)}
+                    className={`w-full h-11 rounded-lg flex items-center justify-center transition-all border-2 ${
+                      item.qcPassed ? 'bg-emerald-50 border-emerald-500 text-emerald-700' : 'bg-slate-50 border-slate-200 text-slate-400'
+                    }`}
+                  >
+                    <Check className={clsx("w-5 h-5", item.qcPassed ? "opacity-100" : "opacity-20")} />
+                  </button>
                 </div>
               </div>
 
+              {/* Batch & Expiry Tracking (FR-INB-023) */}
+              <div className="grid grid-cols-2 gap-4 border-t border-slate-50 pt-4">
+                <div className="space-y-1">
+                  <div className="flex items-center text-[10px] font-bold text-slate-500 uppercase">
+                    <Hash className="w-3 h-3 mr-1" /> Batch No
+                  </div>
+                  <input 
+                    type="text" 
+                    placeholder="B-0000"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={item.batchNo}
+                    onChange={(e) => handleUpdateField(idx, 'batchNo', e.target.value)}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <div className="flex items-center text-[10px] font-bold text-slate-500 uppercase">
+                    <Calendar className="w-3 h-3 mr-1" /> Expiry
+                  </div>
+                  <input 
+                    type="date" 
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={item.expiryDate}
+                    onChange={(e) => handleUpdateField(idx, 'expiryDate', e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {/* Put Away Suggestion (FR-PA-002) */}
+              <div className="bg-blue-50/50 p-3 rounded-xl border border-blue-100 flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="p-2 bg-blue-100 rounded-lg mr-3">
+                    <Sparkles className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold text-blue-800 uppercase tracking-tight">Smart Allocate</p>
+                    <p className="text-sm font-black text-blue-900 tracking-wider">{item.suggestedLoc}</p>
+                  </div>
+                </div>
+                <button className="text-[10px] font-bold text-blue-600 hover:text-blue-800 bg-white px-2 py-1 rounded border border-blue-200">CHANGE</button>
+              </div>
+
               {isOverReceiving && (
-                <div className="mt-2 flex items-center text-xs text-red-600 font-medium">
-                  <AlertTriangle className="w-3 h-3 mr-1" />
-                  Warning: Over-receiving by {item.qtyInput - item.quantity} units
+                <div className="flex items-start p-3 bg-red-50 rounded-xl border border-red-100">
+                  <AlertTriangle className="w-4 h-4 text-red-500 mr-2 mt-0.5" />
+                  <p className="text-[10px] text-red-700 font-bold leading-normal uppercase">
+                    ERROR: Kuantitas melebihi PO ({item.quantity}). 
+                    Blokir transaksi aktif (BR-GR-002).
+                  </p>
                 </div>
               )}
             </div>
@@ -116,13 +173,13 @@ const GoodsReceipt = () => {
         })}
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-slate-200 md:absolute md:rounded-b-xl">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] md:absolute md:rounded-b-xl">
         <button 
           onClick={handleSubmit}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg shadow-blue-600/20 flex items-center justify-center transition-all active:scale-[0.98]"
+          className="w-full bg-slate-900 hover:bg-black text-white font-black py-4 px-4 rounded-xl shadow-lg flex items-center justify-center transition-all active:scale-[0.98]"
         >
           <Check className="w-5 h-5 mr-2" />
-          Confirm Receipt
+          CONFIRM RECEIPT (GRN)
         </button>
       </div>
     </div>

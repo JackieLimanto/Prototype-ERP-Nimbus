@@ -7,6 +7,7 @@ import Inbound from './pages/Inbound';
 import Outbound from './pages/Outbound';
 import Inventory from './pages/Inventory';
 import Settings from './pages/Settings';
+import Returns from './pages/Returns';
 import GoodsReceipt from './pages/GoodsReceipt';
 import Picking from './pages/Picking';
 import POSRegister from './pages/POSRegister';
@@ -40,6 +41,7 @@ function App() {
             <Route path="/inbound" element={<Inbound />} />
             <Route path="/outbound" element={<Outbound />} />
             <Route path="/inventory" element={<Inventory />} />
+            <Route path="/returns" element={<Returns />} />
             <Route path="/settings" element={<Settings />} />
           </Route>
 

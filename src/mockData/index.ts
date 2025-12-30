@@ -1,4 +1,13 @@
-import { User, Product, Supplier, Customer, PurchaseOrder, SalesOrder, Warehouse, InventoryRecord } from '../types';
+import { User, Product, Supplier, Customer, PurchaseOrder, SalesOrder, Warehouse, InventoryRecord, TenantSettings, AuditLog, ReturnOrder } from '../types';
+
+export const mockSettings: TenantSettings = {
+  costingMethod: 'LAST_PRICE',
+  isCostingLocked: true,
+  enableQC: true,
+  enablePutAway: true,
+  enablePacking: true,
+  enableShipping: true
+};
 
 export const mockUser: User = {
   id: 'u1',
@@ -58,15 +67,15 @@ export const mockWarehouses: Warehouse[] = [
 ];
 
 export const mockInventory: InventoryRecord[] = [
-  { id: 'inv1', productId: 'p1', productName: 'Asus Vivobook Pro', warehouseId: 'w1', warehouseName: 'Jakarta Central', location: 'A-01-01', quantity: 30 },
-  { id: 'inv2', productId: 'p1', productName: 'Asus Vivobook Pro', warehouseId: 'w2', warehouseName: 'Bandung Hub', location: 'B-02-01', quantity: 20 },
-  { id: 'inv3', productId: 'p2', productName: 'Samsung Monitor 24"', warehouseId: 'w1', warehouseName: 'Jakarta Central', location: 'A-01-02', quantity: 120 },
-  { id: 'inv4', productId: 'p3', productName: 'Logitech Mechanical Keyboard', warehouseId: 'w1', warehouseName: 'Jakarta Central', location: 'A-02-01', quantity: 200 },
+  { id: 'inv1', productId: 'p1', productName: 'Asus Vivobook Pro', warehouseId: 'w1', warehouseName: 'Jakarta Central', location: 'A-01-01', quantity: 30, value: 360000000 },
+  { id: 'inv2', productId: 'p1', productName: 'Asus Vivobook Pro', warehouseId: 'w2', warehouseName: 'Bandung Hub', location: 'B-02-01', quantity: 20, value: 240000000 },
+  { id: 'inv3', productId: 'p2', productName: 'Samsung Monitor 24"', warehouseId: 'w1', warehouseName: 'Jakarta Central', location: 'A-01-02', quantity: 120, value: 300000000 },
+  { id: 'inv4', productId: 'p3', productName: 'Logitech Mechanical Keyboard', warehouseId: 'w1', warehouseName: 'Jakarta Central', location: 'A-02-01', quantity: 200, value: 300000000 },
 ];
 
 export const mockPOs: PurchaseOrder[] = [
   {
-    id: 'PO-2025-001',
+    id: 'PO-202512-0001',
     supplierId: 's1',
     supplierName: 'PT Tech Indo',
     date: '2025-12-01',
@@ -77,11 +86,11 @@ export const mockPOs: PurchaseOrder[] = [
     ]
   },
   {
-    id: 'PO-2025-002',
+    id: 'PO-202512-0002',
     supplierId: 's2',
     supplierName: 'CV Furniture Jaya',
     date: '2025-12-15',
-    status: 'SUBMITTED',
+    status: 'APPROVED',
     total: 90000000,
     items: [
       { productId: 'p5', productName: 'ErgoChair Pro', quantity: 20, quantityReceived: 0, unitPrice: 4500000 }
@@ -91,7 +100,7 @@ export const mockPOs: PurchaseOrder[] = [
 
 export const mockSOs: SalesOrder[] = [
   {
-    id: 'SO-2025-001',
+    id: 'SO-202512-0001',
     customerId: 'c1',
     customerName: 'Toko Maju Mundur',
     date: '2025-12-10',
@@ -102,7 +111,7 @@ export const mockSOs: SalesOrder[] = [
     ]
   },
   {
-    id: 'SO-2025-002',
+    id: 'SO-202512-0002',
     customerId: 'c2',
     customerName: 'Cyber Cafe 2077',
     date: '2025-12-18',
@@ -112,15 +121,36 @@ export const mockSOs: SalesOrder[] = [
       { productId: 'p2', productName: 'Samsung Monitor 24"', quantity: 10, quantityPicked: 0, unitPrice: 2500000, location: 'A-01-02' }
     ]
   },
+];
+
+export const mockAuditLogs: AuditLog[] = [
+  { id: '1', timestamp: '2025-12-19 10:00:00', user: 'Admin', action: 'CREATE', entity: 'Purchase Order', details: 'Created PO-202512-0002' },
+  { id: '2', timestamp: '2025-12-19 10:05:00', user: 'Manager', action: 'APPROVE', entity: 'Purchase Order', details: 'Approved PO-202512-0002' },
+];
+
+export const mockReturns: ReturnOrder[] = [
   {
-    id: 'SO-2025-003',
-    customerId: 'c1',
-    customerName: 'Toko Maju Mundur',
-    date: '2025-12-19',
-    status: 'CONFIRMED',
-    total: 12000000,
+    id: 'RTN-PUR-202501-0001',
+    type: 'PURCHASE_RETURN',
+    referenceId: 'PO-202512-0001',
+    partnerName: 'PT Tech Indo',
+    date: '2025-01-05',
+    status: 'APPROVED',
+    reason: 'Defective Goods',
     items: [
-      { productId: 'p1', productName: 'Asus Vivobook Pro', quantity: 1, quantityPicked: 0, unitPrice: 12000000, location: 'A-01-01' }
+      { productId: 'p1', productName: 'Asus Vivobook Pro', quantity: 2, condition: 'DAMAGED', disposition: 'RETURN_TO_VENDOR' }
+    ]
+  },
+  {
+    id: 'RMA-202501-0001',
+    type: 'SALES_RETURN',
+    referenceId: 'SO-202512-0001',
+    partnerName: 'Toko Maju Mundur',
+    date: '2025-01-10',
+    status: 'RECEIVED',
+    reason: 'Customer Changed Mind',
+    items: [
+      { productId: 'p1', productName: 'Asus Vivobook Pro', quantity: 1, condition: 'GOOD', disposition: 'RESTOCK' }
     ]
   }
 ];
