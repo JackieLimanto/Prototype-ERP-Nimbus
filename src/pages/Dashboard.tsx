@@ -1,7 +1,25 @@
 import { useNavigate } from 'react-router-dom';
 import { mockInventory, mockPOs, mockSOs } from '../mockData';
-import { DollarSign, Package, ShoppingCart, TrendingUp, AlertTriangle, Store } from 'lucide-react';
+import { DollarSign, Package, ShoppingCart, TrendingUp, AlertTriangle, Store, Bell, CheckCircle2, Truck, ArrowRight } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
+const ActionWidget = ({ title, count, icon: Icon, color, onClick }: any) => (
+  <button 
+    onClick={onClick}
+    className="flex items-center justify-between p-4 bg-white rounded-xl border border-slate-200 hover:border-blue-500 hover:shadow-md transition-all text-left"
+  >
+    <div className="flex items-center space-x-4">
+      <div className={`p-2 rounded-lg ${color}`}>
+        <Icon className="w-5 h-5 text-white" />
+      </div>
+      <div>
+        <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">{title}</p>
+        <p className="text-xl font-bold text-slate-900">{count}</p>
+      </div>
+    </div>
+    <ArrowRight className="w-4 h-4 text-slate-300" />
+  </button>
+);
 
 const StatCard = ({ title, value, icon: Icon, color, trend }: any) => (
   <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
@@ -25,14 +43,12 @@ const Dashboard = () => {
   const navigate = useNavigate();
   // Calculate stats
   const totalStockValue = mockInventory.reduce((acc, item) => {
-    // Find price from mockProducts
-    // Simulating a join, in real app backend does this
-    return acc + (item.quantity * 1000000); // Mock price avg
+    return acc + (item.quantity * 1000000); 
   }, 0);
 
   const lowStockItems = mockInventory.filter(i => i.quantity < 10).length;
-  const pendingPOs = mockPOs.filter(po => po.status !== 'RECEIVED' && po.status !== 'CLOSED').length;
-  const pendingShipments = mockSOs.filter(so => so.status !== 'COMPLETED' && so.status !== 'SHIPPED').length;
+  const pendingPOs = mockPOs.filter(po => po.status === 'SUBMITTED').length;
+  const overdueDOs = mockSOs.filter(so => so.status === 'PROCESSING').length;
 
   const chartData = [
     { name: 'Mon', Inbound: 40, Outbound: 24 },
@@ -47,8 +63,17 @@ const Dashboard = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">Dashboard Overview</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Command Center</h1>
+          <p className="text-slate-500 text-sm mt-1">Real-time overview of your warehouse ecosystem</p>
+        </div>
         <div className="flex space-x-2">
+           <button 
+             onClick={() => navigate('/onboarding')}
+             className="flex items-center px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors font-medium text-sm"
+           >
+             Setup Wizard
+           </button>
            <button 
              onClick={() => navigate('/pos')}
              className="flex items-center px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors shadow-lg shadow-slate-800/20"
@@ -56,11 +81,32 @@ const Dashboard = () => {
              <Store className="w-4 h-4 mr-2" />
              Launch POS
            </button>
-           <select className="bg-white border border-slate-300 text-slate-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
-             <option>Last 7 Days</option>
-             <option>Last 30 Days</option>
-           </select>
         </div>
+      </div>
+
+      {/* Action Widgets */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <ActionWidget 
+          title="Items to Reorder" 
+          count={lowStockItems} 
+          icon={Bell} 
+          color="bg-amber-500" 
+          onClick={() => navigate('/inventory')}
+        />
+        <ActionWidget 
+          title="Late Shipments" 
+          count={overdueDOs} 
+          icon={Truck} 
+          color="bg-red-500" 
+          onClick={() => navigate('/outbound')}
+        />
+        <ActionWidget 
+          title="Pending Approvals" 
+          count={pendingPOs} 
+          icon={CheckCircle2} 
+          color="bg-indigo-500" 
+          onClick={() => navigate('/inbox')}
+        />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -72,23 +118,23 @@ const Dashboard = () => {
           trend="+12%"
         />
         <StatCard 
-          title="Open POs" 
-          value={pendingPOs} 
+          title="Active SKUs" 
+          value={mockInventory.length} 
           icon={Package} 
           color="bg-purple-500" 
         />
         <StatCard 
-          title="Pending Shipments" 
-          value={pendingShipments} 
+          title="Inbound Today" 
+          value="450 Units" 
           icon={ShoppingCart} 
           color="bg-emerald-500"
           trend="+5%"
         />
         <StatCard 
-          title="Low Stock Items" 
-          value={lowStockItems} 
-          icon={AlertTriangle} 
-          color="bg-amber-500" 
+          title="Stock Accuracy" 
+          value="99.2%" 
+          icon={CheckCircle2} 
+          color="bg-cyan-500" 
         />
       </div>
 

@@ -7,7 +7,10 @@ import {
   Settings, 
   LogOut,
   ChevronRight,
-  ArrowLeftRight
+  ArrowLeftRight,
+  Inbox,
+  Wrench,
+  HelpCircle
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import clsx from 'clsx';
@@ -17,11 +20,14 @@ const Sidebar = () => {
 
   const navItems = [
     { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
+    { to: '/inbox', icon: Inbox, label: 'Inbox' },
     { to: '/inbound', icon: PackageCheck, label: 'Inbound' },
     { to: '/outbound', icon: Truck, label: 'Outbound' },
     { to: '/inventory', icon: Boxes, label: 'Inventory' },
     { to: '/returns', icon: ArrowLeftRight, label: 'Returns' },
+    { to: '/utilities', icon: Wrench, label: 'Utilities' },
     { to: '/settings', icon: Settings, label: 'Settings' },
+    { to: '/help', icon: HelpCircle, label: 'Help & Support' },
   ];
 
   return (

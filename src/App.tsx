@@ -8,6 +8,10 @@ import Outbound from './pages/Outbound';
 import Inventory from './pages/Inventory';
 import Settings from './pages/Settings';
 import Returns from './pages/Returns';
+import Inbox from './pages/Inbox';
+import Utilities from './pages/Utilities';
+import Help from './pages/Help';
+import Onboarding from './pages/Onboarding';
 import GoodsReceipt from './pages/GoodsReceipt';
 import Picking from './pages/Picking';
 import POSRegister from './pages/POSRegister';
@@ -38,15 +42,19 @@ function App() {
           {/* Desktop / Admin Routes with Sidebar */}
           <Route element={<ProtectedRoute useLayout={true} />}>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/inbox" element={<Inbox />} />
             <Route path="/inbound" element={<Inbound />} />
             <Route path="/outbound" element={<Outbound />} />
             <Route path="/inventory" element={<Inventory />} />
             <Route path="/returns" element={<Returns />} />
+            <Route path="/utilities" element={<Utilities />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/help" element={<Help />} />
           </Route>
 
-          {/* Mobile / Worker / POS Routes (Full Screen) */}
+          {/* Mobile / Worker / POS / Full Screen Routes */}
           <Route element={<ProtectedRoute useLayout={false} />}>
+            <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/inbound/receive" element={<GoodsReceipt />} />
             <Route path="/outbound/pick" element={<Picking />} />
             <Route path="/pos" element={<POSRegister />} />
