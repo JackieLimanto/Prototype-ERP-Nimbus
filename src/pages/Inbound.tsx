@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { mockPOs, mockSuppliers, mockProducts } from '../mockData';
-import { Plus, Filter, MoreHorizontal, PackageCheck, X, Save } from 'lucide-react';
+import { Plus, Filter, MoreHorizontal, PackageCheck, X, Save, CheckCircle, ArrowDownToLine } from 'lucide-react';
 import clsx from 'clsx';
 
-const Inbound = () => {
-  const [activeTab, setActiveTab] = useState<'PO' | 'GR'>('PO');
+const PurchaseOrder = () => {
+  const [activeTab, setActiveTab] = useState<'orders' | 'receiving' | 'putaway'>('orders');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const navigate = useNavigate();
 
@@ -20,8 +20,12 @@ const Inbound = () => {
   };
 
   const handleCreatePO = () => {
-    alert(`Purchase Order Created for Supplier ${newPO.supplierId} with ${newPO.items.length} items.`);
+    alert(`Purchase Order Created for Supplier ${newPO.supplierId} with ${newPO.items.length} items. Status: PENDING APPROVAL`);
     setShowCreateModal(false);
+  };
+
+  const handleApprove = (id: string) => {
+    alert(`PO ${id} Approved! Ready for receiving.`);
   };
 
   const addItem = () => {
@@ -32,8 +36,8 @@ const Inbound = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Inbound Operations</h1>
-          <p className="text-slate-500 mt-1">Manage purchasing and goods receipt</p>
+          <h1 className="text-2xl font-bold text-slate-900">Purchase Order Management</h1>
+          <p className="text-slate-500 mt-1">Create, approve, receive, and putaway goods</p>
         </div>
         <div className="flex space-x-3">
           <button className="flex items-center px-4 py-2 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 transition-colors">
@@ -45,7 +49,7 @@ const Inbound = () => {
             className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Create {activeTab === 'PO' ? 'Order' : 'Receipt'}
+            Create PO
           </button>
         </div>
       </div>
@@ -54,31 +58,41 @@ const Inbound = () => {
         <div className="border-b border-slate-200">
           <nav className="flex space-x-8 px-6" aria-label="Tabs">
             <button
-              onClick={() => setActiveTab('PO')}
+              onClick={() => setActiveTab('orders')}
               className={clsx(
                 "py-4 px-1 border-b-2 font-medium text-sm transition-colors",
-                activeTab === 'PO' ? "border-blue-500 text-blue-600" : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+                activeTab === 'orders' ? "border-blue-500 text-blue-600" : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
               )}
             >
               Purchase Orders
             </button>
             <button
-              onClick={() => setActiveTab('GR')}
+              onClick={() => setActiveTab('receiving')}
               className={clsx(
                 "py-4 px-1 border-b-2 font-medium text-sm transition-colors",
-                activeTab === 'GR' ? "border-blue-500 text-blue-600" : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+                activeTab === 'receiving' ? "border-blue-500 text-blue-600" : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
               )}
             >
-              Goods Receipts
+              Receiving (GRN)
+            </button>
+             <button
+              onClick={() => setActiveTab('putaway')}
+              className={clsx(
+                "py-4 px-1 border-b-2 font-medium text-sm transition-colors",
+                activeTab === 'putaway' ? "border-blue-500 text-blue-600" : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+              )}
+            >
+              Putaway Tasks
             </button>
           </nav>
         </div>
 
         <div className="overflow-x-auto">
+          {activeTab === 'orders' && (
           <table className="min-w-full divide-y divide-slate-200">
             <thead className="bg-slate-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">ID</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">PO Number</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Supplier</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Date</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Total</th>
@@ -103,24 +117,50 @@ const Inbound = () => {
                       {po.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    {po.status !== 'RECEIVED' && po.status !== 'CLOSED' && po.status !== 'CANCELLED' ? (
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex justify-end gap-2">
+                    {po.status === 'SUBMITTED' && (
+                         <button 
+                            onClick={() => handleApprove(po.id)}
+                            className="text-indigo-600 hover:text-indigo-900 flex items-center"
+                            title="Approve PO"
+                        >
+                            <CheckCircle className="w-4 h-4 mr-1" /> Approve
+                        </button>
+                    )}
+                    {po.status === 'APPROVED' && (
                       <button 
                         onClick={() => handleReceive(po)}
-                        className="text-blue-600 hover:text-blue-900 flex items-center ml-auto"
+                        className="text-blue-600 hover:text-blue-900 flex items-center"
+                        title="Receive Goods"
                       >
                         <PackageCheck className="w-4 h-4 mr-1" /> Receive
                       </button>
-                    ) : (
-                      <button className="text-slate-400 hover:text-slate-600">
+                    )}
+                    <button className="text-slate-400 hover:text-slate-600">
                         <MoreHorizontal className="w-5 h-5" />
                       </button>
-                    )}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          )}
+
+          {activeTab === 'receiving' && (
+              <div className="p-8 text-center text-slate-500">
+                  <PackageCheck className="w-12 h-12 mx-auto text-slate-300 mb-3" />
+                  <p>Goods Receipt Notes (GRN) History</p>
+                  <p className="text-xs text-slate-400">View all received shipments here</p>
+              </div>
+          )}
+
+          {activeTab === 'putaway' && (
+              <div className="p-8 text-center text-slate-500">
+                  <ArrowDownToLine className="w-12 h-12 mx-auto text-slate-300 mb-3" />
+                  <p>Pending Putaway Tasks</p>
+                  <p className="text-xs text-slate-400">Move received items to storage locations</p>
+              </div>
+          )}
         </div>
       </div>
 
@@ -195,4 +235,4 @@ const Inbound = () => {
   );
 };
 
-export default Inbound;
+export default PurchaseOrder;

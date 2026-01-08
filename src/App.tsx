@@ -6,6 +6,11 @@ import Dashboard from './pages/Dashboard';
 import Inbound from './pages/Inbound';
 import Outbound from './pages/Outbound';
 import Inventory from './pages/Inventory';
+import MasterData from './pages/MasterData';
+import WarehouseSetup from './pages/WarehouseSetup';
+import Reports from './pages/Reports';
+import Integration from './pages/Integration';
+import System from './pages/System';
 import Settings from './pages/Settings';
 import Returns from './pages/Returns';
 import Inbox from './pages/Inbox';
@@ -46,6 +51,11 @@ function App() {
             <Route path="/inbound" element={<Inbound />} />
             <Route path="/outbound" element={<Outbound />} />
             <Route path="/inventory" element={<Inventory />} />
+            <Route path="/master-data" element={<MasterData />} />
+            <Route path="/warehouse-setup" element={<WarehouseSetup />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/integration" element={<Integration />} />
+            <Route path="/system" element={<System />} />
             <Route path="/returns" element={<Returns />} />
             <Route path="/utilities" element={<Utilities />} />
             <Route path="/settings" element={<Settings />} />

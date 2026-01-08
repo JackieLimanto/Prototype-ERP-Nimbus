@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { mockInventory, mockAuditLogs, mockWarehouses } from '../mockData';
-import { Search, ArrowRightLeft, PenTool, History, Boxes, BadgeInfo, X, Save } from 'lucide-react';
+import { Search, ArrowRightLeft, PenTool, History, Boxes, BadgeInfo, X, Save, FileText, Move } from 'lucide-react';
 import clsx from 'clsx';
 
 const Inventory = () => {
-  const [activeTab, setActiveTab] = useState<'STOCK' | 'AUDIT'>('STOCK');
+  const [activeTab, setActiveTab] = useState<'STOCK' | 'ADJUSTMENTS' | 'RELOCATIONS' | 'AUDIT'>('STOCK');
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [showAdjustModal, setShowAdjustModal] = useState(false);
 
@@ -70,7 +70,7 @@ const Inventory = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Inventory Management</h1>
-          <p className="text-slate-500 mt-1">Real-time stock levels, valuation, and audit trail</p>
+          <p className="text-slate-500 mt-1">Real-time stock levels, adjustments, relocations, and audit trail</p>
         </div>
         <div className="flex space-x-3">
           <button 
@@ -78,7 +78,7 @@ const Inventory = () => {
             className="flex items-center px-4 py-2 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 transition-colors"
           >
             <ArrowRightLeft className="w-4 h-4 mr-2" />
-            Transfer
+            Relocate
           </button>
           <button 
             onClick={() => setShowAdjustModal(true)}
@@ -96,16 +96,34 @@ const Inventory = () => {
             <button
               onClick={() => setActiveTab('STOCK')}
               className={clsx(
-                "py-4 px-1 border-b-2 font-medium text-sm flex items-center",
+                "py-4 px-1 border-b-2 font-medium text-sm flex items-center transition-colors",
                 activeTab === 'STOCK' ? "border-blue-500 text-blue-600" : "border-transparent text-slate-500 hover:text-slate-700"
               )}
             >
               <Boxes className="w-4 h-4 mr-2" /> Stock Levels
             </button>
             <button
+              onClick={() => setActiveTab('ADJUSTMENTS')}
+              className={clsx(
+                "py-4 px-1 border-b-2 font-medium text-sm flex items-center transition-colors",
+                activeTab === 'ADJUSTMENTS' ? "border-blue-500 text-blue-600" : "border-transparent text-slate-500 hover:text-slate-700"
+              )}
+            >
+              <FileText className="w-4 h-4 mr-2" /> Adjustments
+            </button>
+             <button
+              onClick={() => setActiveTab('RELOCATIONS')}
+              className={clsx(
+                "py-4 px-1 border-b-2 font-medium text-sm flex items-center transition-colors",
+                activeTab === 'RELOCATIONS' ? "border-blue-500 text-blue-600" : "border-transparent text-slate-500 hover:text-slate-700"
+              )}
+            >
+              <Move className="w-4 h-4 mr-2" /> Relocations
+            </button>
+            <button
               onClick={() => setActiveTab('AUDIT')}
               className={clsx(
-                "py-4 px-1 border-b-2 font-medium text-sm flex items-center",
+                "py-4 px-1 border-b-2 font-medium text-sm flex items-center transition-colors",
                 activeTab === 'AUDIT' ? "border-blue-500 text-blue-600" : "border-transparent text-slate-500 hover:text-slate-700"
               )}
             >
@@ -114,7 +132,7 @@ const Inventory = () => {
           </nav>
         </div>
 
-        {activeTab === 'STOCK' ? (
+        {activeTab === 'STOCK' && (
           <>
             <div className="p-4 border-b border-slate-200 flex gap-4">
               <div className="relative flex-1 max-w-md">
@@ -178,7 +196,25 @@ const Inventory = () => {
               </table>
             </div>
           </>
-        ) : (
+        )}
+
+        {activeTab === 'ADJUSTMENTS' && (
+              <div className="p-8 text-center text-slate-500">
+                  <FileText className="w-12 h-12 mx-auto text-slate-300 mb-3" />
+                  <p>Adjustment History</p>
+                  <p className="text-xs text-slate-400">Records of stock adjustments (damage, loss, etc.)</p>
+              </div>
+        )}
+
+        {activeTab === 'RELOCATIONS' && (
+              <div className="p-8 text-center text-slate-500">
+                  <Move className="w-12 h-12 mx-auto text-slate-300 mb-3" />
+                  <p>Relocation History</p>
+                  <p className="text-xs text-slate-400">Records of internal stock movements</p>
+              </div>
+        )}
+
+        {activeTab === 'AUDIT' && (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-200">
               <thead className="bg-slate-50">
@@ -226,7 +262,7 @@ const Inventory = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
             <div className="p-4 border-b flex justify-between items-center">
-              <h3 className="font-bold text-slate-900">Stock Transfer</h3>
+              <h3 className="font-bold text-slate-900">Stock Relocation</h3>
               <button onClick={() => setShowTransferModal(false)}><X className="w-5 h-5" /></button>
             </div>
             <div className="p-4 space-y-4">
@@ -264,7 +300,7 @@ const Inventory = () => {
             </div>
             <div className="p-4 border-t bg-slate-50 flex justify-end gap-2 rounded-b-xl">
               <button onClick={() => setShowTransferModal(false)} className="px-4 py-2 text-slate-600 font-medium">Cancel</button>
-              <button onClick={handleTransfer} className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">Confirm Transfer</button>
+              <button onClick={handleTransfer} className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">Confirm Relocation</button>
             </div>
           </div>
         </div>

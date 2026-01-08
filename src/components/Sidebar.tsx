@@ -10,7 +10,12 @@ import {
   ArrowLeftRight,
   Inbox,
   Wrench,
-  HelpCircle
+  HelpCircle,
+  Database,
+  Warehouse,
+  BarChart3,
+  Link2,
+  Server
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import clsx from 'clsx';
@@ -21,13 +26,16 @@ const Sidebar = () => {
   const navItems = [
     { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/inbox', icon: Inbox, label: 'Inbox' },
-    { to: '/inbound', icon: PackageCheck, label: 'Inbound' },
-    { to: '/outbound', icon: Truck, label: 'Outbound' },
-    { to: '/inventory', icon: Boxes, label: 'Inventory' },
-    { to: '/returns', icon: ArrowLeftRight, label: 'Returns' },
+    { to: '/system', icon: Server, label: 'System' },
+    { to: '/inbound', icon: PackageCheck, label: 'Purchase Order' },
+    { to: '/outbound', icon: Truck, label: 'Sales Order' },
+    { to: '/inventory', icon: Boxes, label: 'Inventory Items' },
+    { to: '/master-data', icon: Database, label: 'Master Data' },
+    { to: '/warehouse-setup', icon: Warehouse, label: 'Warehouse Setup' },
+    { to: '/reports', icon: BarChart3, label: 'Reports' },
+    { to: '/integration', icon: Link2, label: 'Integration' },
     { to: '/utilities', icon: Wrench, label: 'Utilities' },
-    { to: '/settings', icon: Settings, label: 'Settings' },
-    { to: '/help', icon: HelpCircle, label: 'Help & Support' },
+    { to: '/help', icon: HelpCircle, label: 'Help' },
   ];
 
   return (
