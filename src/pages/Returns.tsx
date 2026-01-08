@@ -144,8 +144,8 @@ const Returns = () => {
                 >
                   <option value="">Select Reference...</option>
                   {returnData.type === 'PURCHASE_RETURN' 
-                    ? mockPOs.map(po => <option key={po.id} value={po.id}>{po.id} - {po.supplierName}</option>)
-                    : mockSOs.map(so => <option key={so.id} value={so.id}>{so.id} - {so.customerName}</option>)
+                    ? mockPOs.map(po => <option key={po.id} value={po.id}>{po.po_number} - {po.supplier_name}</option>)
+                    : mockSOs.map(so => <option key={so.id} value={so.id}>{so.so_number} - {so.customer_name}</option>)
                   }
                 </select>
               </div>

@@ -43,12 +43,12 @@ const Dashboard = () => {
   const navigate = useNavigate();
   // Calculate stats
   const totalStockValue = mockInventory.reduce((acc, item) => {
-    return acc + (item.quantity * 1000000); 
+    return acc + item.total_value; 
   }, 0);
 
-  const lowStockItems = mockInventory.filter(i => i.quantity < 10).length;
+  const lowStockItems = mockInventory.filter(i => i.current_qty < 10).length;
   const pendingPOs = mockPOs.filter(po => po.status === 'SUBMITTED').length;
-  const overdueDOs = mockSOs.filter(so => so.status === 'PROCESSING').length;
+  const overdueDOs = mockSOs.filter(so => so.status === 'CONFIRMED').length;
 
   const chartData = [
     { name: 'Mon', Inbound: 40, Outbound: 24 },

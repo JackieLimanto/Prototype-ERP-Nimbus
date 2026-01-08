@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { mockPOs, mockSuppliers, mockProducts } from '../mockData';
 import { Plus, Filter, MoreHorizontal, PackageCheck, X, Save, CheckCircle, ArrowDownToLine } from 'lucide-react';
 import clsx from 'clsx';
+import { PurchaseOrder as POType } from '../types';
 
 const PurchaseOrder = () => {
   const [activeTab, setActiveTab] = useState<'orders' | 'receiving' | 'putaway'>('orders');
@@ -11,16 +12,16 @@ const PurchaseOrder = () => {
 
   // PO Form State
   const [newPO, setNewPO] = useState({
-    supplierId: 's1',
-    items: [{ productId: 'p1', qty: 1, price: 0 }]
+    supplier_id: 's1',
+    items: [{ product_id: 'p1', qty_ordered: 1, unit_price: 0 }]
   });
 
-  const handleReceive = (po: any) => {
+  const handleReceive = (po: POType) => {
     navigate('/inbound/receive', { state: { po } });
   };
 
   const handleCreatePO = () => {
-    alert(`Purchase Order Created for Supplier ${newPO.supplierId} with ${newPO.items.length} items. Status: PENDING APPROVAL`);
+    alert(`Purchase Order Created for Supplier ${newPO.supplier_id} with ${newPO.items.length} items. Status: PENDING APPROVAL`);
     setShowCreateModal(false);
   };
 
@@ -29,7 +30,7 @@ const PurchaseOrder = () => {
   };
 
   const addItem = () => {
-    setNewPO({ ...newPO, items: [...newPO.items, { productId: 'p1', qty: 1, price: 0 }] });
+    setNewPO({ ...newPO, items: [...newPO.items, { product_id: 'p1', qty_ordered: 1, unit_price: 0 }] });
   };
 
   return (
@@ -103,14 +104,14 @@ const PurchaseOrder = () => {
             <tbody className="bg-white divide-y divide-slate-200">
               {mockPOs.map((po) => (
                 <tr key={po.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">{po.id}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">{po.supplierName}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{po.date}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">Rp {po.total.toLocaleString()}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">{po.po_number}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">{po.supplier_name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{po.order_date}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">Rp {po.total_amount.toLocaleString()}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={clsx(
                       "px-2 inline-flex text-xs leading-5 font-semibold rounded-full",
-                      po.status === 'RECEIVED' ? 'bg-emerald-100 text-emerald-800' : 
+                      po.status === 'CLOSED' ? 'bg-emerald-100 text-emerald-800' : 
                       po.status === 'SUBMITTED' ? 'bg-blue-100 text-blue-800' : 
                       po.status === 'APPROVED' ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-100 text-slate-800'
                     )}>
@@ -177,8 +178,8 @@ const PurchaseOrder = () => {
                 <label className="block text-sm font-medium text-slate-700 mb-1">Supplier</label>
                 <select 
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg"
-                  value={newPO.supplierId}
-                  onChange={(e) => setNewPO({...newPO, supplierId: e.target.value})}
+                  value={newPO.supplier_id}
+                  onChange={(e) => setNewPO({...newPO, supplier_id: e.target.value})}
                 >
                   {mockSuppliers.map(s => (
                     <option key={s.id} value={s.id}>{s.name}</option>
@@ -195,10 +196,10 @@ const PurchaseOrder = () => {
                   <div key={idx} className="flex gap-3">
                     <select 
                       className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm"
-                      value={item.productId}
+                      value={item.product_id}
                       onChange={(e) => {
                         const newItems = [...newPO.items];
-                        newItems[idx].productId = e.target.value;
+                        newItems[idx].product_id = e.target.value;
                         setNewPO({...newPO, items: newItems});
                       }}
                     >
@@ -210,10 +211,10 @@ const PurchaseOrder = () => {
                       type="number" 
                       className="w-24 px-3 py-2 border border-slate-300 rounded-lg text-sm" 
                       placeholder="Qty"
-                      value={item.qty}
+                      value={item.qty_ordered}
                       onChange={(e) => {
                         const newItems = [...newPO.items];
-                        newItems[idx].qty = parseInt(e.target.value);
+                        newItems[idx].qty_ordered = parseInt(e.target.value);
                         setNewPO({...newPO, items: newItems});
                       }}
                     />

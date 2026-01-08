@@ -25,12 +25,12 @@ const Header = () => {
         
         <div className="flex items-center pl-6 border-l border-slate-200">
           <div className="text-right mr-3 hidden md:block">
-            <div className="text-sm font-semibold text-slate-900">{user?.name}</div>
+            <div className="text-sm font-semibold text-slate-900">{user?.full_name}</div>
             <div className="text-xs text-slate-500">{user?.role.replace('_', ' ')}</div>
           </div>
           <div className="h-10 w-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden">
             {user?.avatarUrl ? (
-              <img src={user.avatarUrl} alt={user.name} className="h-full w-full object-cover" />
+              <img src={user.avatarUrl} alt={user.full_name} className="h-full w-full object-cover" />
             ) : (
               <UserIcon className="text-slate-400 w-6 h-6" />
             )}

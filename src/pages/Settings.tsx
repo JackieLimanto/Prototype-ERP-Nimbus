@@ -158,9 +158,9 @@ const Settings = () => {
                 <tbody className="divide-y divide-slate-200">
                   {mockProducts.map(p => (
                     <tr key={p.id}>
-                      <td className="px-6 py-4 text-sm font-medium text-slate-900">{p.code}</td>
+                      <td className="px-6 py-4 text-sm font-medium text-slate-900">{p.sku}</td>
                       <td className="px-6 py-4 text-sm text-slate-600">{p.name}</td>
-                      <td className="px-6 py-4 text-sm text-slate-500">{p.category}</td>
+                      <td className="px-6 py-4 text-sm text-slate-500">{p.category_id}</td>
                       <td className="px-6 py-4 text-sm text-slate-900">Rp {p.price.toLocaleString()}</td>
                     </tr>
                   ))}
@@ -214,7 +214,7 @@ const Settings = () => {
                     <tr key={c.id}>
                       <td className="px-6 py-4 text-sm font-medium text-slate-900">{c.name}</td>
                       <td className="px-6 py-4 text-sm text-slate-500">{c.email}</td>
-                      <td className="px-6 py-4 text-sm text-slate-500 truncate max-w-xs">{c.address}</td>
+                      <td className="px-6 py-4 text-sm text-slate-500 truncate max-w-xs">{c.ship_address}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -267,9 +267,9 @@ const Settings = () => {
                 {mockWarehouses.map(w => (
                   <div key={w.id} className="border border-slate-200 rounded-lg p-4 flex justify-between items-center">
                     <div>
-                      <h3 className="font-medium text-slate-900">{w.name}</h3>
+                      <h3 className="font-medium text-slate-900">{w.wh_name}</h3>
                       <p className="text-sm text-slate-500 flex items-center mt-1">
-                        <MapPin className="w-3 h-3 mr-1" /> {w.location}
+                        <MapPin className="w-3 h-3 mr-1" /> {w.address}
                       </p>
                     </div>
                     <span className="px-2 py-1 bg-emerald-100 text-emerald-700 text-xs font-medium rounded-full">Active</span>

@@ -28,8 +28,8 @@ const Inventory = () => {
   const handleTransfer = () => {
     // Validation: Check if source location has enough stock (BR-TRF-003)
     // For prototype, we mock this check against the selected 'p1' item
-    const sourceItem = mockInventory.find(i => i.productId === transferData.productId && i.location === transferData.fromLocation);
-    const availableQty = sourceItem ? sourceItem.quantity : 0;
+    const sourceItem = mockInventory.find(i => i.product_id === transferData.productId && i.location_code === transferData.fromLocation);
+    const availableQty = sourceItem ? sourceItem.current_qty : 0;
 
     if (transferData.qty > availableQty) {
       alert(`Error: Insufficient stock in ${transferData.fromLocation}. Available: ${availableQty} (BR-TRF-003)`);
@@ -47,8 +47,8 @@ const Inventory = () => {
 
   const handleAdjust = () => {
     // Validation: Check for negative stock (BR-INV-001)
-    const targetItem = mockInventory.find(i => i.productId === adjustData.productId && i.location === adjustData.location);
-    const currentQty = targetItem ? targetItem.quantity : 0;
+    const targetItem = mockInventory.find(i => i.product_id === adjustData.productId && i.location_code === adjustData.location);
+    const currentQty = targetItem ? targetItem.current_qty : 0;
     const newQty = currentQty + adjustData.qty;
 
     if (newQty < 0) {
@@ -166,21 +166,21 @@ const Inventory = () => {
                   {mockInventory.map((item) => (
                     <tr key={item.id} className="hover:bg-slate-50 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-slate-900">{item.productName}</div>
-                        <div className="text-xs text-slate-500">ID: {item.productId}</div>
+                        <div className="text-sm font-medium text-slate-900">{item.product_name}</div>
+                        <div className="text-xs text-slate-500">ID: {item.product_id}</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{item.warehouseName}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{item.wh_name}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="px-2 py-1 bg-slate-100 rounded text-xs font-mono font-medium text-slate-700">
-                          {item.location}
+                          {item.location_code}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-900">{item.quantity}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-900">{item.current_qty}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
-                        Rp {item.value.toLocaleString()}
+                        Rp {item.total_value.toLocaleString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {item.quantity < 10 ? (
+                        {item.current_qty < 10 ? (
                           <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
                             Low Stock
                           </span>
@@ -230,7 +230,7 @@ const Inventory = () => {
                 {mockAuditLogs.map((log) => (
                   <tr key={log.id} className="hover:bg-slate-50">
                     <td className="px-6 py-4 whitespace-nowrap text-xs text-slate-500 font-mono">{log.timestamp}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">{log.user}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">{log.user_name}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={clsx(
                         "px-2 py-0.5 rounded text-[10px] font-bold uppercase",
@@ -240,7 +240,7 @@ const Inventory = () => {
                         {log.action}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">{log.entity}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">{log.resource}</td>
                     <td className="px-6 py-4 text-sm text-slate-500">{log.details}</td>
                   </tr>
                 ))}

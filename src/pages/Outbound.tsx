@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { mockSOs } from '../mockData';
 import { Plus, Filter, MoreHorizontal, PackageSearch, Box, Truck, CheckCircle, Package } from 'lucide-react';
 import clsx from 'clsx';
+import { SalesOrder as SOType } from '../types';
 
 const SalesOrder = () => {
   const [activeTab, setActiveTab] = useState<'orders' | 'picking' | 'packing' | 'shipping'>('orders');
   const navigate = useNavigate();
 
-  const handlePick = (so: any) => {
+  const handlePick = (so: SOType) => {
     navigate('/outbound/pick', { state: { so } });
   };
 
@@ -101,15 +102,15 @@ const SalesOrder = () => {
             <tbody className="bg-white divide-y divide-slate-200">
               {mockSOs.map((so) => (
                 <tr key={so.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">{so.id}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">{so.customerName}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{so.date}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">Rp {so.total.toLocaleString()}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">{so.so_number}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">{so.customer_name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{so.order_date}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">Rp {so.total_amount.toLocaleString()}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={clsx(
                       "px-2 inline-flex text-xs leading-5 font-semibold rounded-full",
-                      so.status === 'COMPLETED' ? 'bg-emerald-100 text-emerald-800' : 
-                      so.status === 'PROCESSING' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-800'
+                      so.status === 'DELIVERED' ? 'bg-emerald-100 text-emerald-800' : 
+                      so.status === 'CONFIRMED' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-800'
                     )}>
                       {so.status}
                     </span>
@@ -123,7 +124,7 @@ const SalesOrder = () => {
                       >
                         <CheckCircle className="w-4 h-4 mr-1" /> Allocate
                       </button>
-                    ) : so.status === 'PROCESSING' ? (
+                    ) : so.status === 'ALLOCATED' ? (
                        <button 
                          onClick={() => handlePick(so)}
                          className="text-orange-600 hover:text-orange-900 flex items-center ml-auto"

@@ -69,23 +69,23 @@ const GoodsReceipt = () => {
         </button>
         <div>
           <h1 className="text-lg font-bold">Receive Goods (GRN)</h1>
-          <p className="text-xs text-slate-400">{po.id} • {po.supplierName}</p>
+          <p className="text-xs text-slate-400">{po.po_number} • {po.supplier_name}</p>
         </div>
       </div>
 
       <div className="p-4 space-y-6 pb-32">
         {receivedItems.map((item, idx) => {
-          const isOverReceiving = item.qtyInput > item.quantity;
+          const isOverReceiving = item.qtyInput > item.qty_ordered;
 
           return (
             <div key={idx} className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-4">
               <div className="flex justify-between items-start">
                 <div>
-                  <h3 className="font-bold text-slate-900 leading-tight">{item.productName}</h3>
-                  <p className="text-[10px] text-slate-400 font-mono mt-1">SKU: {item.productId}</p>
+                  <h3 className="font-bold text-slate-900 leading-tight">{item.product_name}</h3>
+                  <p className="text-[10px] text-slate-400 font-mono mt-1">SKU: {item.product_id}</p>
                 </div>
                 <span className="text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-1 rounded uppercase">
-                  PO: {item.quantity}
+                  PO: {item.qty_ordered}
                 </span>
               </div>
 
@@ -163,7 +163,7 @@ const GoodsReceipt = () => {
                 <div className="flex items-start p-3 bg-red-50 rounded-xl border border-red-100">
                   <AlertTriangle className="w-4 h-4 text-red-500 mr-2 mt-0.5" />
                   <p className="text-[10px] text-red-700 font-bold leading-normal uppercase">
-                    ERROR: Kuantitas melebihi PO ({item.quantity}). 
+                    ERROR: Kuantitas melebihi PO ({item.qty_ordered}). 
                     Blokir transaksi aktif (BR-GR-002).
                   </p>
                 </div>

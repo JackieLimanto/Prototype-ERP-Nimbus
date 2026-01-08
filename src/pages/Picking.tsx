@@ -71,7 +71,7 @@ const Picking = () => {
         </button>
         <div>
           <h1 className="text-lg font-bold">Picking Task</h1>
-          <p className="text-xs text-slate-400">Order #{so.id}</p>
+          <p className="text-xs text-slate-400">Order #{so.so_number}</p>
         </div>
         <div className="ml-auto text-xs font-black bg-blue-600 px-3 py-1 rounded-full uppercase tracking-tighter">
           {items.filter(i => i.isPicked).length} / {items.length} DONE
@@ -99,14 +99,15 @@ const Picking = () => {
              <p className="text-xs text-blue-500 font-black uppercase tracking-[0.2em] mb-3">Target Location</p>
              <div className="flex items-center justify-center text-6xl font-black text-slate-900 tracking-tighter">
                <MapPin className="w-10 h-10 mr-3 text-blue-600" />
-               {currentItem.location || 'N/A'}
+               {/* Mock smart location suggestion since API doesn't return it yet */}
+               {currentItem.product_id === 'p1' ? 'A-01-01' : 'A-01-02'}
              </div>
           </div>
 
           {/* Product Card */}
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex-1 flex flex-col">
              <div className="relative aspect-video bg-slate-100 rounded-xl mb-5 flex items-center justify-center overflow-hidden border border-slate-100">
-                <img src={`https://placehold.co/600x400?text=${currentItem.productName.split(' ')[0]}`} alt="Product" className="object-cover w-full h-full" />
+                <img src={`https://placehold.co/600x400?text=${currentItem.product_name.split(' ')[0]}`} alt="Product" className="object-cover w-full h-full" />
                 {currentItem.isExpiringSoon && (
                   <div className="absolute top-2 left-2 bg-amber-500 text-white text-[10px] font-black px-2 py-1 rounded shadow-lg flex items-center">
                     <AlertCircle className="w-3 h-3 mr-1" /> FEFO: EXPIRING SOON
@@ -115,14 +116,14 @@ const Picking = () => {
              </div>
              
              <div className="mb-6">
-               <h3 className="text-2xl font-black text-slate-900 leading-none mb-2 uppercase">{currentItem.productName}</h3>
-               <p className="text-slate-400 text-xs font-mono">SKU: {currentItem.productId}</p>
+               <h3 className="text-2xl font-black text-slate-900 leading-none mb-2 uppercase">{currentItem.product_name}</h3>
+               <p className="text-slate-400 text-xs font-mono">SKU: {currentItem.product_id}</p>
              </div>
 
              <div className="mt-auto">
                <div className="bg-slate-900 rounded-2xl p-6 flex justify-between items-center mb-4">
                   <span className="text-slate-400 font-bold uppercase text-xs tracking-widest">PICK QTY</span>
-                  <span className="text-5xl font-black text-white">{currentItem.quantity}</span>
+                  <span className="text-5xl font-black text-white">{currentItem.qty_ordered}</span>
                </div>
 
                <div className="grid grid-cols-2 gap-3">
@@ -144,7 +145,7 @@ const Picking = () => {
           
           <div className="mt-6 text-center">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Next Up</p>
-            <p className="text-sm font-bold text-slate-600">{items[currentIndex + 1]?.location || '--- FINISH ---'}</p>
+            <p className="text-sm font-bold text-slate-600">{items[currentIndex + 1] ? (items[currentIndex + 1].product_id === 'p1' ? 'A-01-01' : 'A-01-02') : '--- FINISH ---'}</p>
           </div>
         </div>
       )}
@@ -154,7 +155,7 @@ const Picking = () => {
         <div className="absolute inset-0 z-50 bg-slate-900/90 backdrop-blur-sm p-6 flex flex-col justify-center">
           <div className="bg-white rounded-3xl p-6 space-y-4">
             <h2 className="text-xl font-black text-slate-900 uppercase">Short Pick Reason</h2>
-            <p className="text-sm text-slate-500">Why are you picking less than {currentItem.quantity} units?</p>
+            <p className="text-sm text-slate-500">Why are you picking less than {currentItem.qty_ordered} units?</p>
             
             <div className="grid gap-2 pt-2">
               {['DAMAGED', 'NOT_FOUND', 'WRONG_ITEM', 'EXPIRED'].map(reason => (
