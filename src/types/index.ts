@@ -1,188 +1,218 @@
+// WMS Data Dictionary v1.1 Implementation
+
 export type UserRole = 'TENANT_ADMIN' | 'MANAGER' | 'WORKER' | 'FINANCE';
 
 export interface User {
-  id: string;
-  name: string;
+  id: string; // UUID
   email: string;
+  full_name: string;
   role: UserRole;
   avatarUrl?: string;
+  assigned_wh_ids: string[]; // UUID[]
+  status: 'ACTIVE' | 'INACTIVE';
 }
 
 export type CostingMethod = 'FIFO' | 'AVERAGE' | 'LAST_PRICE';
 
 export interface TenantSettings {
+  tenant_name: string;
+  subdomain: string;
+  logo_url?: string;
+  currency_code: string;
+  timezone: string;
+  date_format: string;
+  
+  // Warehouse Defaults
   costingMethod: CostingMethod;
-  isCostingLocked: boolean; // Locked after first transaction
+  isCostingLocked: boolean;
   enableQC: boolean;
   enablePutAway: boolean;
   enablePacking: boolean;
   enableShipping: boolean;
 }
 
-export interface Product {
-  id: string;
-  code: string;
+export type WarehouseType = 'MAIN' | 'TRANSIT' | 'VIRTUAL';
+
+export interface Warehouse {
+  id: string; // UUID
+  wh_code: string;
+  wh_name: string;
+  address: string;
+  wh_type: WarehouseType;
+  zones: Zone[];
+}
+
+export type ZoneType = 'RECEIVING' | 'STORAGE' | 'SHIPPING' | 'QC';
+
+export interface Zone {
+  id: string; // UUID
   name: string;
-  category: string;
-  price: number;
-  stock: number;
-  unit: string;
+  type: ZoneType;
+  locations: Location[];
+}
+
+export interface Location {
+  id: string; // UUID
+  loc_code: string; // {Aisle}-{Rack}-{Bin}
+  zone_id: string;
+  aisle: string;
+  rack: string;
+  bin: string;
+  is_pickable: boolean;
+  max_weight?: number;
+}
+
+export interface Product {
+  id: string; // UUID
+  sku: string;
+  name: string;
+  barcode?: string;
+  category_id: string;
+  base_uom: string;
+  
+  // Tracking
+  is_batch: boolean;
+  is_expiry: boolean;
+  
+  // Stock Levels
+  min_stock?: number;
+  
+  // Helper for UI (computed)
+  stock: number; 
+  price: number; // For reference/mock
   thumbnailUrl?: string;
 }
 
 export interface Supplier {
-  id: string;
+  id: string; // UUID
+  supplier_code: string;
   name: string;
-  email: string;
-  phone: string;
+  email?: string;
+  phone?: string;
+  address: string;
+  status: 'ACTIVE' | 'INACTIVE';
 }
 
 export interface Customer {
-  id: string;
+  id: string; // UUID
+  customer_code: string;
   name: string;
-  email: string;
-  address: string;
+  email?: string;
+  phone?: string;
+  ship_address: string;
+  status: 'ACTIVE' | 'INACTIVE';
 }
 
-export type POStatus = 'DRAFT' | 'SUBMITTED' | 'APPROVED' | 'PARTIALLY_RECEIVED' | 'RECEIVED' | 'CLOSED' | 'CANCELLED';
+export type POStatus = 'DRAFT' | 'SUBMITTED' | 'APPROVED' | 'REJECTED' | 'RECEIVING' | 'CLOSED';
 
 export interface PurchaseOrder {
-  id: string;
-  supplierId: string;
-  supplierName: string;
-  date: string;
+  id: string; // UUID
+  po_number: string;
+  supplier_id: string;
+  supplier_name: string; // Helper
+  order_date: string; // Date string
+  expected_date?: string;
   status: POStatus;
-  total: number;
+  notes?: string;
   items: POItem[];
+  
+  // Computed
+  total_amount: number;
 }
 
 export interface POItem {
-  productId: string;
-  productName: string;
-  quantity: number;
-  quantityReceived: number;
-  unitPrice: number;
+  product_id: string;
+  product_name: string; // Helper
+  qty_ordered: number;
+  unit_price: number;
+  qty_received: number; // Computed from GRs
+  line_status: 'OPEN' | 'PARTIAL' | 'CLOSED';
 }
 
 export type GRStatus = 'DRAFT' | 'CONFIRMED' | 'QC_PENDING' | 'PUTAWAY_PENDING' | 'COMPLETED';
 
 export interface GoodsReceipt {
-  id: string;
-  poId: string;
-  date: string;
+  id: string; // UUID
+  grn_number: string;
+  po_id: string;
+  received_date: string;
+  received_by: string; // User ID
+  vendor_do?: string;
   status: GRStatus;
   items: GRItem[];
 }
 
 export interface GRItem {
-  productId: string;
-  quantity: number;
-  locationId?: string; // Temporary receiving location
-  qcStatus?: 'PENDING' | 'PASS' | 'FAIL';
+  product_id: string;
+  qty_received: number;
+  batch_no?: string;
+  expiry_date?: string;
+  qc_status: 'PENDING' | 'PASSED' | 'FAILED';
+  location_id?: string; // Target location
 }
 
-export interface QCRecord {
-  id: string;
-  grId: string;
-  itemId: string;
-  quantityPassed: number;
-  quantityFailed: number;
-  reason?: string;
-  inspectorId: string;
-  timestamp: string;
-}
-
-export type SOStatus = 'DRAFT' | 'CONFIRMED' | 'PROCESSING' | 'PICKED' | 'PACKED' | 'SHIPPED' | 'COMPLETED' | 'CANCELLED';
+export type SOStatus = 'DRAFT' | 'CONFIRMED' | 'ALLOCATED' | 'PICKING' | 'PACKED' | 'SHIPPED' | 'DELIVERED';
 
 export interface SalesOrder {
-  id: string;
-  customerId: string;
-  customerName: string;
-  date: string;
+  id: string; // UUID
+  so_number: string;
+  customer_id: string;
+  customer_name: string; // Helper
+  order_date: string;
+  required_date?: string;
   status: SOStatus;
-  total: number;
   items: SOItem[];
+  
+  // Computed
+  total_amount: number;
 }
 
 export interface SOItem {
-  productId: string;
-  productName: string;
-  quantity: number;
-  quantityPicked: number;
-  unitPrice: number;
-  location?: string;
-}
-
-export interface Package {
-  id: string;
-  soId: string;
-  trackingNumber: string;
-  weight: number;
-  dimensions: string;
-  items: { productId: string; quantity: number }[];
-  status: 'PACKED' | 'SHIPPED';
-}
-
-export interface Shipment {
-  id: string;
-  soId: string;
-  carrier: string;
-  trackingNumber: string;
-  shipDate: string;
-  packages: Package[];
-}
-
-export type ReturnType = 'PURCHASE_RETURN' | 'SALES_RETURN';
-export type ReturnStatus = 'DRAFT' | 'APPROVED' | 'RECEIVED' | 'COMPLETED' | 'REJECTED';
-
-export interface ReturnOrder {
-  id: string;
-  type: ReturnType;
-  referenceId: string; // PO ID or SO ID
-  partnerName: string; // Supplier or Customer
-  date: string;
-  status: ReturnStatus;
-  items: ReturnItem[];
-  reason: string;
-}
-
-export interface ReturnItem {
-  productId: string;
-  productName: string;
-  quantity: number;
-  condition: 'GOOD' | 'DAMAGED' | 'EXPIRED';
-  disposition?: 'RESTOCK' | 'SCRAP' | 'REPAIR' | 'RETURN_TO_VENDOR';
-}
-
-export interface Warehouse {
-  id: string;
-  name: string;
-  location: string;
-  zones: Zone[];
-}
-
-export interface Zone {
-  id: string;
-  name: string;
-  locations: string[]; 
+  product_id: string;
+  product_name: string; // Helper
+  qty_ordered: number;
+  qty_allocated: number;
+  qty_picked: number;
+  unit_price: number;
 }
 
 export interface InventoryRecord {
-  id: string;
-  productId: string;
-  productName: string;
-  warehouseId: string;
-  warehouseName: string;
-  location: string;
-  quantity: number;
-  value: number; // Based on Costing Method
+  id: string; // Ledger ID
+  trx_date: string;
+  product_id: string;
+  product_name: string; // Helper
+  wh_id: string;
+  wh_name: string; // Helper
+  location_id: string;
+  location_code: string; // Helper
+  batch_id?: string;
+  qty_change: number;
+  ref_type: 'GRN' | 'DO' | 'ADJ' | 'TRF';
+  ref_no: string;
+  unit_cost: number;
+  
+  // Aggregate helper
+  current_qty: number;
+  total_value: number;
 }
 
 export interface AuditLog {
   id: string;
   timestamp: string;
-  user: string;
+  user_id: string;
+  user_name: string; // Helper
   action: string;
-  entity: string;
+  resource: string;
   details: string;
+}
+
+export interface ReturnOrder {
+  id: string;
+  type: 'PURCHASE_RETURN' | 'SALES_RETURN';
+  referenceId: string;
+  partnerName: string;
+  date: string;
+  status: 'DRAFT' | 'APPROVED' | 'RECEIVED' | 'COMPLETED' | 'REJECTED';
+  items: any[];
+  reason: string;
 }
