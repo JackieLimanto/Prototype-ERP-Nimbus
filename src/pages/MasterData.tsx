@@ -114,7 +114,7 @@ const MasterData = () => {
                                     <div className="text-xs">{s.phone}</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-center">
-                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${s.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${s.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                                         {s.status}
                                     </span>
                                 </td>
@@ -142,7 +142,7 @@ const MasterData = () => {
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">{c.name}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 truncate max-w-xs">{c.ship_address}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-center">
-                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${c.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${c.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                                         {c.status}
                                     </span>
                                 </td>

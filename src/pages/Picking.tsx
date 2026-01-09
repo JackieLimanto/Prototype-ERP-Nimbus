@@ -12,7 +12,7 @@ const Picking = () => {
     so?.items.map(item => ({
       ...item,
       isPicked: false,
-      actualQty: item.quantity,
+      actualQty: item.qty_ordered,
       shortPickReason: '',
       isExpiringSoon: Math.random() > 0.8 // Mock FEFO warning
     })) || []

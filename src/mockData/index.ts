@@ -6,22 +6,28 @@ export const mockSettings: TenantSettings = {
   currency_code: 'IDR',
   timezone: 'Asia/Jakarta',
   date_format: 'DD/MM/YYYY',
-  costingMethod: 'LAST_PRICE',
-  isCostingLocked: true,
-  enableQC: true,
-  enablePutAway: true,
-  enablePacking: true,
-  enableShipping: true
+  numbering: [
+    { doc_type: 'PO', prefix: 'PO-', next_number: 2025120003, padding: 6 },
+    { doc_type: 'SO', prefix: 'SO-', next_number: 2025120003, padding: 6 },
+    { doc_type: 'GRN', prefix: 'GRN-', next_number: 1001, padding: 6 },
+    { doc_type: 'DO', prefix: 'DO-', next_number: 1001, padding: 6 },
+    { doc_type: 'ADJ', prefix: 'ADJ-', next_number: 1001, padding: 6 }
+  ],
+  workflows: [
+    { module: 'PO', is_enabled: true, role_id: 'manager_role' },
+    { module: 'SO', is_enabled: true, min_amount: 10000000, role_id: 'manager_role' }
+  ]
 };
 
 export const mockUser: User = {
   id: 'u1',
   full_name: 'Demo Admin',
   email: 'admin@nimbus.com',
-  role: 'TENANT_ADMIN',
+  role: 'tenant_admin',
+  role_id: 'r1',
   avatarUrl: 'https://ui-avatars.com/api/?name=Demo+Admin&background=0ea5e9&color=fff',
   assigned_wh_ids: ['w1', 'w2'],
-  status: 'ACTIVE'
+  status: 'active'
 };
 
 export const mockProducts: Product[] = [
@@ -53,28 +59,29 @@ export const mockProducts: Product[] = [
 ];
 
 export const mockSuppliers: Supplier[] = [
-  { id: 's1', supplier_code: 'SUP-001', name: 'PT Tech Indo', email: 'sales@techindo.com', phone: '021-555-0101', address: 'Jakarta', status: 'ACTIVE' },
-  { id: 's2', supplier_code: 'SUP-002', name: 'CV Furniture Jaya', email: 'contact@furnijaya.com', phone: '022-555-0202', address: 'Bandung', status: 'ACTIVE' },
+  { id: 's1', supplier_code: 'SUP-001', name: 'PT Tech Indo', email: 'sales@techindo.com', phone: '021-555-0101', address: 'Jakarta', status: 'active' },
+  { id: 's2', supplier_code: 'SUP-002', name: 'CV Furniture Jaya', email: 'contact@furnijaya.com', phone: '022-555-0202', address: 'Bandung', status: 'active' },
 ];
 
 export const mockCustomers: Customer[] = [
-  { id: 'c1', customer_code: 'CUST-001', name: 'Toko Maju Mundur', email: 'owner@majumundur.com', ship_address: 'Jl. Sudirman No. 1', status: 'ACTIVE' },
-  { id: 'c2', customer_code: 'CUST-002', name: 'Cyber Cafe 2077', email: 'admin@cyber2077.com', ship_address: 'Jl. Thamrin No. 99', status: 'ACTIVE' },
+  { id: 'c1', customer_code: 'CUST-001', name: 'Toko Maju Mundur', email: 'owner@majumundur.com', ship_address: 'Jl. Sudirman No. 1', status: 'active' },
+  { id: 'c2', customer_code: 'CUST-002', name: 'Cyber Cafe 2077', email: 'admin@cyber2077.com', ship_address: 'Jl. Thamrin No. 99', status: 'active' },
 ];
 
 export const mockWarehouses: Warehouse[] = [
   { 
-    id: 'w1', wh_code: 'WH-JKT', wh_name: 'Jakarta Central', address: 'Jakarta', wh_type: 'MAIN',
+    id: 'w1', wh_code: 'WH-JKT', wh_name: 'Jakarta Central', address: 'Jakarta', wh_type: 'main',
+    costing_method: 'last_price', enable_qc: true, enable_put_away: true,
     zones: [
       { 
-        id: 'z1', name: 'Zone A (Electronics)', type: 'STORAGE',
+        id: 'z1', name: 'Zone A (Electronics)', type: 'storage',
         locations: [
           { id: 'l1', loc_code: 'A-01-01', zone_id: 'z1', aisle: 'A', rack: '01', bin: '01', is_pickable: true },
           { id: 'l2', loc_code: 'A-01-02', zone_id: 'z1', aisle: 'A', rack: '01', bin: '02', is_pickable: true }
         ]
       },
       { 
-        id: 'z2', name: 'Zone B (Bulk)', type: 'STORAGE',
+        id: 'z2', name: 'Zone B (Bulk)', type: 'storage',
         locations: [
             { id: 'l3', loc_code: 'B-01-01', zone_id: 'z2', aisle: 'B', rack: '01', bin: '01', is_pickable: true }
         ] 
@@ -82,10 +89,11 @@ export const mockWarehouses: Warehouse[] = [
     ]
   },
   { 
-    id: 'w2', wh_code: 'WH-BDG', wh_name: 'Bandung Hub', address: 'Bandung', wh_type: 'MAIN',
+    id: 'w2', wh_code: 'WH-BDG', wh_name: 'Bandung Hub', address: 'Bandung', wh_type: 'main',
+    costing_method: 'average', enable_qc: false, enable_put_away: false,
     zones: [
       { 
-        id: 'z3', name: 'Zone A', type: 'STORAGE',
+        id: 'z3', name: 'Zone A', type: 'storage',
         locations: [
             { id: 'l4', loc_code: 'A-01-01', zone_id: 'z3', aisle: 'A', rack: '01', bin: '01', is_pickable: true }
         ] 
@@ -119,10 +127,10 @@ export const mockPOs: PurchaseOrder[] = [
     supplier_id: 's1',
     supplier_name: 'PT Tech Indo',
     order_date: '2025-12-01',
-    status: 'CLOSED',
+    status: 'closed',
     total_amount: 600000000,
     items: [
-      { product_id: 'p1', product_name: 'Asus Vivobook Pro', qty_ordered: 50, qty_received: 50, unit_price: 12000000, line_status: 'CLOSED' }
+      { product_id: 'p1', product_name: 'Asus Vivobook Pro', qty_ordered: 50, qty_received: 50, unit_price: 12000000, line_status: 'closed' }
     ]
   },
   {
@@ -131,10 +139,10 @@ export const mockPOs: PurchaseOrder[] = [
     supplier_id: 's2',
     supplier_name: 'CV Furniture Jaya',
     order_date: '2025-12-15',
-    status: 'APPROVED',
+    status: 'approved',
     total_amount: 90000000,
     items: [
-      { product_id: 'p5', product_name: 'ErgoChair Pro', qty_ordered: 20, qty_received: 0, unit_price: 4500000, line_status: 'OPEN' }
+      { product_id: 'p5', product_name: 'ErgoChair Pro', qty_ordered: 20, qty_received: 0, unit_price: 4500000, line_status: 'open' }
     ]
   },
 ];
@@ -146,7 +154,7 @@ export const mockSOs: SalesOrder[] = [
     customer_id: 'c1',
     customer_name: 'Toko Maju Mundur',
     order_date: '2025-12-10',
-    status: 'DELIVERED',
+    status: 'delivered',
     total_amount: 24000000,
     items: [
       { product_id: 'p1', product_name: 'Asus Vivobook Pro', qty_ordered: 2, qty_allocated: 2, qty_picked: 2, unit_price: 12000000 }
@@ -158,7 +166,7 @@ export const mockSOs: SalesOrder[] = [
     customer_id: 'c2',
     customer_name: 'Cyber Cafe 2077',
     order_date: '2025-12-18',
-    status: 'CONFIRMED',
+    status: 'confirmed',
     total_amount: 25000000,
     items: [
       { product_id: 'p2', product_name: 'Samsung Monitor 24"', qty_ordered: 10, qty_allocated: 0, qty_picked: 0, unit_price: 2500000 }

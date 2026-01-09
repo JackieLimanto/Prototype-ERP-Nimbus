@@ -1,18 +1,34 @@
 // WMS Data Dictionary v1.1 Implementation
 
-export type UserRole = 'TENANT_ADMIN' | 'MANAGER' | 'WORKER' | 'FINANCE';
+export type UserRole = 'tenant_admin' | 'manager' | 'worker' | 'finance';
 
 export interface User {
   id: string; // UUID
   email: string;
   full_name: string;
-  role: UserRole;
+  role_id: string; // UUID (Role) or use UserRole for simpler MVP
+  role: UserRole; // Kept for UI convenience
   avatarUrl?: string;
   assigned_wh_ids: string[]; // UUID[]
-  status: 'ACTIVE' | 'INACTIVE';
+  status: 'active' | 'inactive';
 }
 
-export type CostingMethod = 'FIFO' | 'AVERAGE' | 'LAST_PRICE';
+export type CostingMethod = 'fifo' | 'average' | 'last_price';
+
+export interface DocumentNumbering {
+  doc_type: 'PO' | 'SO' | 'GRN' | 'DO' | 'ADJ';
+  prefix: string;
+  next_number: number;
+  padding: number; // default 6
+  separator?: string;
+}
+
+export interface WorkflowSetting {
+  module: 'PO' | 'SO' | 'ADJ';
+  is_enabled: boolean;
+  min_amount?: number;
+  role_id: string;
+}
 
 export interface TenantSettings {
   tenant_name: string;
@@ -22,16 +38,12 @@ export interface TenantSettings {
   timezone: string;
   date_format: string;
   
-  // Warehouse Defaults
-  costingMethod: CostingMethod;
-  isCostingLocked: boolean;
-  enableQC: boolean;
-  enablePutAway: boolean;
-  enablePacking: boolean;
-  enableShipping: boolean;
+  // Document Numbering & Workflows
+  numbering: DocumentNumbering[];
+  workflows: WorkflowSetting[];
 }
 
-export type WarehouseType = 'MAIN' | 'TRANSIT' | 'VIRTUAL';
+export type WarehouseType = 'main' | 'transit' | 'virtual';
 
 export interface Warehouse {
   id: string; // UUID
@@ -39,10 +51,16 @@ export interface Warehouse {
   wh_name: string;
   address: string;
   wh_type: WarehouseType;
+  
+  // Settings per Warehouse
+  costing_method: CostingMethod;
+  enable_qc: boolean;
+  enable_put_away: boolean;
+
   zones: Zone[];
 }
 
-export type ZoneType = 'RECEIVING' | 'STORAGE' | 'SHIPPING' | 'QC';
+export type ZoneType = 'receiving' | 'storage' | 'shipping' | 'qc';
 
 export interface Zone {
   id: string; // UUID
@@ -90,7 +108,7 @@ export interface Supplier {
   email?: string;
   phone?: string;
   address: string;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: 'active' | 'inactive';
 }
 
 export interface Customer {
@@ -100,10 +118,17 @@ export interface Customer {
   email?: string;
   phone?: string;
   ship_address: string;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: 'active' | 'inactive';
 }
 
-export type POStatus = 'DRAFT' | 'SUBMITTED' | 'APPROVED' | 'REJECTED' | 'RECEIVING' | 'CLOSED';
+export interface Transporter {
+  id: string; // UUID
+  name: string;
+  services?: string[]; // JSON/Array
+  track_url_tpl?: string;
+}
+
+export type POStatus = 'draft' | 'submitted' | 'approved' | 'rejected' | 'receiving' | 'closed';
 
 export interface PurchaseOrder {
   id: string; // UUID
@@ -126,10 +151,10 @@ export interface POItem {
   qty_ordered: number;
   unit_price: number;
   qty_received: number; // Computed from GRs
-  line_status: 'OPEN' | 'PARTIAL' | 'CLOSED';
+  line_status: 'open' | 'partial' | 'closed';
 }
 
-export type GRStatus = 'DRAFT' | 'CONFIRMED' | 'QC_PENDING' | 'PUTAWAY_PENDING' | 'COMPLETED';
+export type GRStatus = 'draft' | 'confirmed' | 'qc_pending' | 'putaway_pending' | 'completed';
 
 export interface GoodsReceipt {
   id: string; // UUID
@@ -138,7 +163,7 @@ export interface GoodsReceipt {
   received_date: string;
   received_by: string; // User ID
   vendor_do?: string;
-  status: GRStatus;
+  status: GRStatus; // Mapped from logic or explicit
   items: GRItem[];
 }
 
@@ -147,11 +172,11 @@ export interface GRItem {
   qty_received: number;
   batch_no?: string;
   expiry_date?: string;
-  qc_status: 'PENDING' | 'PASSED' | 'FAILED';
+  qc_status: 'pending' | 'passed' | 'failed';
   location_id?: string; // Target location
 }
 
-export type SOStatus = 'DRAFT' | 'CONFIRMED' | 'ALLOCATED' | 'PICKING' | 'PACKED' | 'SHIPPED' | 'DELIVERED';
+export type SOStatus = 'draft' | 'confirmed' | 'allocated' | 'picking' | 'packed' | 'shipped' | 'delivered';
 
 export interface SalesOrder {
   id: string; // UUID
@@ -176,6 +201,24 @@ export interface SOItem {
   unit_price: number;
 }
 
+export interface PickingTask {
+  pick_id: string; // UUID
+  so_line_id: string;
+  location_id: string;
+  qty_to_pick: number;
+  qty_picked: number;
+  short_pick_reason?: 'not_found' | 'damaged';
+}
+
+export interface DeliveryOrder {
+  id: string; // UUID
+  do_number: string;
+  so_id: string;
+  transporter_id: string;
+  tracking_no?: string;
+  ship_date: string;
+}
+
 export interface InventoryRecord {
   id: string; // Ledger ID
   trx_date: string;
@@ -196,6 +239,24 @@ export interface InventoryRecord {
   total_value: number;
 }
 
+export interface StockAdjustment {
+  adj_number: string;
+  product_id: string;
+  location_id: string;
+  current_qty: number;
+  new_qty: number;
+  delta: number;
+  reason_code: 'damaged' | 'lost' | 'found' | 'expired';
+}
+
+export interface StockRelocation {
+  rlc_number: string;
+  product_id: string;
+  from_loc_id: string;
+  to_loc_id: string;
+  qty: number;
+}
+
 export interface AuditLog {
   id: string;
   timestamp: string;
@@ -204,6 +265,22 @@ export interface AuditLog {
   action: string;
   resource: string;
   details: string;
+  old_val?: any;
+  new_val?: any;
+}
+
+export interface ApiCredentials {
+  key_name: string;
+  api_key: string;
+  scopes: any; // JSON
+  expires_at?: string;
+}
+
+export interface Webhook {
+  event_type: 'po.received' | 'so.shipped' | 'stock.low';
+  target_url: string;
+  signing_secret: string;
+  is_active: boolean;
 }
 
 export interface ReturnOrder {

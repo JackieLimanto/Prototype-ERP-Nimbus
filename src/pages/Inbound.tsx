@@ -111,15 +111,15 @@ const PurchaseOrder = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={clsx(
                       "px-2 inline-flex text-xs leading-5 font-semibold rounded-full",
-                      po.status === 'CLOSED' ? 'bg-emerald-100 text-emerald-800' : 
-                      po.status === 'SUBMITTED' ? 'bg-blue-100 text-blue-800' : 
-                      po.status === 'APPROVED' ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-100 text-slate-800'
+                      po.status === 'closed' ? 'bg-emerald-100 text-emerald-800' : 
+                      po.status === 'submitted' ? 'bg-blue-100 text-blue-800' : 
+                      po.status === 'approved' ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-100 text-slate-800'
                     )}>
                       {po.status}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex justify-end gap-2">
-                    {po.status === 'SUBMITTED' && (
+                    {po.status === 'submitted' && (
                          <button 
                             onClick={() => handleApprove(po.id)}
                             className="text-indigo-600 hover:text-indigo-900 flex items-center"
@@ -128,7 +128,7 @@ const PurchaseOrder = () => {
                             <CheckCircle className="w-4 h-4 mr-1" /> Approve
                         </button>
                     )}
-                    {po.status === 'APPROVED' && (
+                    {po.status === 'approved' && (
                       <button 
                         onClick={() => handleReceive(po)}
                         className="text-blue-600 hover:text-blue-900 flex items-center"

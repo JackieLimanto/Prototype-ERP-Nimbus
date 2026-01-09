@@ -50,7 +50,7 @@ const GoodsReceipt = () => {
 
   const handleSubmit = () => {
     // Check for hard-block over-receipt
-    const hasViolation = receivedItems.some(i => i.qtyInput > i.quantity);
+    const hasViolation = receivedItems.some(i => i.qtyInput > i.qty_ordered);
     if (hasViolation) {
       alert('Error: Kuantitas diterima melebihi pesanan. Perlu persetujuan Admin (BR-GR-002).');
       return;

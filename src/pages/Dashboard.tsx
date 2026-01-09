@@ -47,8 +47,8 @@ const Dashboard = () => {
   }, 0);
 
   const lowStockItems = mockInventory.filter(i => i.current_qty < 10).length;
-  const pendingPOs = mockPOs.filter(po => po.status === 'SUBMITTED').length;
-  const overdueDOs = mockSOs.filter(so => so.status === 'CONFIRMED').length;
+  const pendingPOs = mockPOs.filter(po => po.status === 'submitted').length;
+  const overdueDOs = mockSOs.filter(so => so.status === 'confirmed').length;
 
   const chartData = [
     { name: 'Mon', Inbound: 40, Outbound: 24 },

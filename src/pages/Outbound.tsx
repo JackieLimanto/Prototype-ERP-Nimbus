@@ -109,14 +109,14 @@ const SalesOrder = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={clsx(
                       "px-2 inline-flex text-xs leading-5 font-semibold rounded-full",
-                      so.status === 'DELIVERED' ? 'bg-emerald-100 text-emerald-800' : 
-                      so.status === 'CONFIRMED' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-800'
+                      so.status === 'delivered' ? 'bg-emerald-100 text-emerald-800' : 
+                      so.status === 'confirmed' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-800'
                     )}>
                       {so.status}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    {so.status === 'CONFIRMED' ? (
+                    {so.status === 'confirmed' ? (
                        <button 
                          onClick={() => handleAllocate(so.id)}
                          className="text-blue-600 hover:text-blue-900 flex items-center ml-auto"
@@ -124,7 +124,7 @@ const SalesOrder = () => {
                       >
                         <CheckCircle className="w-4 h-4 mr-1" /> Allocate
                       </button>
-                    ) : so.status === 'ALLOCATED' ? (
+                    ) : so.status === 'allocated' ? (
                        <button 
                          onClick={() => handlePick(so)}
                          className="text-orange-600 hover:text-orange-900 flex items-center ml-auto"
